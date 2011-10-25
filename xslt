@@ -11,4 +11,9 @@ Out=${1:--}; shift || true
 java -Xmx2g -Xms200m \
     -DentityExpansionLimit=10000000 \
     -jar /opt/local/share/java/saxon8.jar -s "$In" "$XSLT" |
-xmllint --format --encode utf-8 "$Out"
+xmllint --format --encode utf-8 - |
+if [ x- = x"$Out" ]; then
+    cat
+else
+    cat >"$Out"
+fi

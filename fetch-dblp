@@ -16,7 +16,8 @@ fetch http://dblp.uni-trier.de/xml/dblp.dtd
 # extract data for conferences
 {
     gunzip |
+    sed -ne '1,/<dblp>/p; $p; /<proceedings .* key="conf\/.*">/,/<\/proceedings>/ { p; }' |
     xslt "$Base"/extract-from-dblp.xsl
-} <dblp.xml.gz >conferences-past.xml
+} <dblp.xml.gz >past-conferences.xml
 
 # TODO extract venue and time
