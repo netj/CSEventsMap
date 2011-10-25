@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Author: Jaeho.Shin@Stanford.EDU
+# Created: 2011-10-25
+set -eu
+
+URL=$1
+LocalName=${2:-${1##*/}}
+completeFlag="$LocalName.complete"
+if [ -e "$completeFlag" ]; then
+    # avoid downloading twice if we have a complete one
+    #exit # XXX broken for dynamically generated content
+    rm -f "$completeFlag"
+    curl -L -R -z "$LocalName" -o "$LocalName" "$URL" || true #curl -L -R -o "$LocalName" "$URL"
+else
+    # otherwise, try resuming the previous one
+    curl -L -R -C - -o "$LocalName" "$URL" || curl -L -R -o "$LocalName" "$URL" 
+fi
+touch "$completeFlag"

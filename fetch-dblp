@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Author: Jaeho.Shin@Stanford.EDU
+# Created: 2011-10-25
+set -eu
+
+Self=`readlink -f "$0"`
+Base=`dirname "$Self"`
+PATH="$Base:$PATH"
+
+cd "$Base"/data
+
+# fetch fresh dblp.xml.gz
+fetch http://dblp.uni-trier.de/xml/dblp.xml.gz
+fetch http://dblp.uni-trier.de/xml/dblp.dtd
+
+# extract data for conferences
+{
+    gunzip |
+    xslt "$Base"/extract-from-dblp.xsl
+} <dblp.xml.gz >conferences-past.xml
+
+# TODO extract venue and time

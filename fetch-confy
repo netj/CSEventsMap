@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Author: Jaeho.Shin@Stanford.EDU
+# Created: 2011-10-25
+set -eu
+
+Self=`readlink -f "$0"`
+Base=`dirname "$Self"`
+PATH="$Base:$PATH"
+
+cd "$Base"/data
+
+# fetch fresh confy.rss
+fetch http://www.st.ewi.tudelft.nl/~mathijs/conf/index.php?rss=1 confy.rss
+
+# extract data for conferences
+xslt "$Base"/extract-from-confy.xsl confy.rss upcoming-conferences.xml
+
+# TODO extract venue and time
