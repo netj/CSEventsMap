@@ -13,11 +13,11 @@ cd "$Base"/data
 fetch http://dblp.uni-trier.de/xml/dblp.xml.gz
 fetch http://dblp.uni-trier.de/xml/dblp.dtd
 
-# extract data for conferences
+# extract data for conferences and also venue and time
 {
     gunzip |
     sed -ne '1,/<dblp>/p; $p; /<proceedings .* key="conf\/.*">/,/<\/proceedings>/ { p; }' |
     xslt "$Base"/extract-from-dblp.xsl
+    #cat >dblp.proceedings.xml
+    #<dblp.proceedings.xml \
 } <dblp.xml.gz >past-conferences.xml
-
-# TODO extract venue and time

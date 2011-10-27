@@ -8,7 +8,7 @@ LocalName=${2:-${1##*/}}
 completeFlag="$LocalName.complete"
 if [ -e "$completeFlag" ]; then
     # avoid downloading twice if we have a complete one
-    #exit # XXX broken for dynamically generated content
+exit # XXX broken for dynamically generated content
     rm -f "$completeFlag"
     curl -L -R -z "$LocalName" -o "$LocalName" "$URL" || true #curl -L -R -o "$LocalName" "$URL"
 else
