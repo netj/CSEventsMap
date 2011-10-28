@@ -1,0 +1,1071 @@
+Las Vegas, Nevada, USA
+San Diego, California, USA
+Beijing, China
+Paris, France
+San Jose, California, USA
+San Francisco, California, USA
+Singapore
+Barcelona, Spain
+Washington, D.C., USA
+Vienna, Austria
+Hong Kong, China
+Tokyo, Japan
+Chicago, Illinois, USA
+Seattle, Washington, USA
+Amsterdam, The Netherlands
+Vancouver, British Columbia, Canada
+Berlin, Germany
+Seoul, Korea
+Orlando, Florida, USA
+London, UK
+Boston, Massachusetts, USA
+Rome, Italy
+Atlanta, Georgia, USA
+Portland, Oregon, USA
+Lisbon, Portugal
+Toulouse, France
+Prague, Czech Republic
+Budapest, Hungary
+Shanghai, China
+Cambridge, Massachusetts, USA
+New York, New York, USA
+Pittsburgh, Pennsylvania, USA
+Athens, Greece
+Sydney, Australia
+New Orleans, Louisiana, USA
+Zurich, Switzerland
+Pisa, Italy
+Austin, Texas, USA
+Toronto, Canada
+Melbourne, Australia
+Madrid, Spain
+Santa Barbara, California, USA
+Monterey, California, USA
+Taipei, Taiwan
+Montreal, Canada
+Kyoto, Japan
+Grenoble, France
+Toronto, Ontario, Canada
+Jeju Island, Korea
+Honolulu, Hawaii, USA
+Bangalore, India
+Philadelphia, Pennsylvania, USA
+Munich, Germany
+Copenhagen, Denmark
+Los Angeles, California, USA
+Porto, Portugal
+Edinburgh, UK
+Valencia, Spain
+Venice, Italy
+Leipzig, Germany
+Baltimore, Maryland, USA
+Karlsruhe, Germany
+Dublin, Ireland
+Alexandria, Virginia, USA
+Dagstuhl Castle, Germany
+Berkeley, California, USA
+Stanford, California, USA
+Lausanne, Switzerland
+Brisbane, Australia
+Stockholm, Sweden
+Italy
+Cambridge, UK
+Las Vegas Nevada, USA
+Istanbul, Turkey
+Innsbruck, Austria
+Xi'an, China
+Montreal, Quebec, Canada
+Utrecht, The Netherlands
+Lyon, France
+Linz, Austria
+Eindhoven, The Netherlands
+Dallas, Texas, USA
+St. Petersburg, Russia
+Nice, France
+Newport Beach, California, USA
+Germany
+Edinburgh, Scotland, UK
+Brussels, Belgium
+Auckland, New Zealand
+Trento, Italy
+Minneapolis, Minnesota, USA
+Leuven, Belgium
+Helsinki, Finland
+France
+Dresden, Germany
+Darmstadt, Germany
+Banff, Alberta, Canada
+Warsaw, Poland
+Trondheim, Norway
+Paphos, Cyprus
+Montréal, Québec, Canada
+Milan, Italy
+Montpellier, France
+Kaiserslautern, Germany
+Saarbrücken, Germany
+Ottawa, Canada
+Heraklion, Crete, Greece
+Hamburg, Germany
+Geneva, Switzerland
+Denver, Colorado, USA
+Bologna, Italy
+Aarhus, Denmark
+Rio de Janeiro, Brazil
+Hyderabad, India
+Uppsala, Sweden
+Salt Lake City, Utah, USA
+Oslo, Norway
+Delft, The Netherlands
+Bonn, Germany
+Wuhan, China
+Tucson, Arizona, USA
+Oxford, UK
+Florence, Italy
+Brno, Czech Republic
+Torino, Italy
+Providence, Rhode Island, USA
+Phoenix, Arizona, USA
+Palma de Mallorca, Spain
+Nancy, France
+Cancun, Mexico
+Bertinoro, Italy
+Banff, Canada
+Arlington, Virginia, USA
+Aachen, Germany
+San Antonio, Texas, USA
+Manchester, UK
+Funchal, Madeira, Portugal
+Bangkok, Thailand
+York, UK
+Tallinn, Estonia
+St. Louis, Missouri, USA
+Napa Valley, California, USA
+Kolkata, India
+Fairfax, Virginia, USA
+Erfurt, Germany
+Anaheim, California, USA
+Adelaide, Australia
+Princeton, New Jersey, USA
+New Delhi, India
+Nashville, Tennessee, USA
+Moscow, Russia
+Miami, Florida, USA
+Heidelberg, Germany
+Hangzhou, China
+Haifa, Israel
+Freiburg, Germany
+Yokohama, Japan
+Vancouver, Canada
+Snowbird, Utah, USA
+Palo Alto, California, USA
+Ottawa, Ontario, Canada
+Genova, Italy
+Como, Italy
+Wroclaw, Poland
+Turku, Finland
+Kuala Lumpur, Malaysia
+Australia
+Turin, Italy
+Tsukuba, Japan
+Thessaloniki, Greece
+Poznan, Poland
+Paderborn, Germany
+Limerick, Ireland
+Klagenfurt, Austria
+Indianapolis, Indiana, USA
+Guangzhou, China
+Graz, Austria
+Dortmund, Germany
+Coimbra, Portugal
+Bremen, Germany
+Braga, Portugal
+Bethesda, Maryland, USA
+Bergen, Norway
+UK
+Tampa, Florida, USA
+Santiago, Chile
+Samos, Greece
+Potsdam, Germany
+Naples, Italy
+Ischia, Italy
+Houston, Texas, USA
+Glasgow, UK
+Columbus, Ohio, USA
+Chennai, India
+Busan, Korea
+Bruges, Belgium
+Bordeaux, France
+Sendai, Japan
+Santa Fe, New Mexico, USA
+Salzburg, Austria
+Reno, Nevada, USA
+Osaka, Japan
+Nara, Japan
+Nantes, France
+Malaga, Spain
+Fukuoka, Japan
+Enschede, The Netherlands
+Corfu, Greece
+College Park, Maryland, USA
+Victoria, British Columbia, Canada
+Timisoara, Romania
+Sophia Antipolis, France
+Scottsdale, Arizona, USA
+Sanibel Island, Florida, USA
+Raleigh, North Carolina, USA
+Perth, Australia
+Passau, Germany
+Mexico City, Mexico
+Marseille, France
+Hammamet, Tunisia
+Greenbelt, Maryland, USA
+Estoril, Portugal
+Canberra, Australia
+Boulder, Colorado, USA
+Bilbao, Spain
+Tübingen, Germany
+Tampere, Finland
+Szeged, Hungary
+Stuttgart, Germany
+Salamanca, Spain
+Saint-Malo, France
+Patras, Greece
+Oakland, California, USA
+Milano, Italy
+Linköping, Sweden
+Las Palmas de Gran Canaria, Spain
+Konstanz, Germany
+Hong Kong
+Hanoi, Vietnam
+Hakodate, Japan
+Espoo, Finland
+Dubrovnik, Croatia
+Cairo, Egypt
+Antwerp, Belgium
+The Netherlands
+Setúbal, Portugal
+Savannah, Georgia, USA
+Santa Clara, California, USA
+Riga, Latvia
+Rennes, France
+Regensburg, Germany
+Palermo, Italy
+Nanjing, China
+Montréal, Canada
+Miami Beach, Florida, USA
+Long Beach, California, USA
+London, Ontario, Canada
+Lisboa, Portugal
+Lille, France
+Krakow, Poland
+Kobe, Japan
+Ithaca, New York, USA
+Irvine, California, USA
+Guilin, China
+Granada, Spain
+Gold Coast, Australia
+Edmonton, Alberta, Canada
+Chongqing, China
+Charleston, South Carolina, USA
+Ann Arbor, Michigan, USA
+Alicante, Spain
+Aalborg, Denmark
+Zürich, Switzerland
+Vilamoura, Algarve, Portugal
+Verona, Italy
+Varna, Bulgaria
+Siena, Italy
+Sheffield, UK
+San Juan, Puerto Rico
+Reykjavik, Iceland
+Pasadena, California, USA
+Niagara Falls, Canada
+New Brunswick, New Jersey, USA
+Liverpool, UK
+Kingston, Ontario, Canada
+Ghent, Belgium
+Genoa, Italy
+Gdansk, Poland
+Gaithersburg, Maryland, USA
+Dunedin, New Zealand
+Chengdu, China
+Charlotte, North Carolina, USA
+Cape Town, South Africa
+Brighton, UK
+Waterloo, Ontario, Canada
+Ulm, Germany
+Taichung, Taiwan
+Suzhou, China
+Spain
+Sorrento, Italy
+Sitges, Spain
+Pune, India
+Portugal
+Padova, Italy
+Novosibirsk, Russia
+Mountain View, California, USA
+Montréal, Quebec, Canada
+Lübeck, Germany
+Luxemburg
+Kunming, China
+Kraków, Poland
+Kaohsiung, Taiwan
+Hiroshima, Japan
+Gold Coast, Queensland, Australia
+Essen, Germany
+Durham, UK
+Crete, Greece
+Cork, Ireland
+Cincinnati, Ohio, USA
+China
+Bristol, UK
+Birmingham, UK
+Athens, Georgia, USA
+Albuquerque, New Mexico, USA
+Zaragoza, Spain
+Zakopane, Poland
+White Plains, New York, USA
+Washington DC, USA
+Virginia, USA
+Tarragona, Spain
+Taormina, Italy
+St. Malo, France
+Silicon Valley, California, USA
+Seville, Spain
+Samos Island, Greece
+Saint Malo, France
+Roskilde, Denmark
+Puebla, Mexico
+Portland, Maine, USA
+Oulu, Finland
+Napa, California, USA
+Marina del Rey, California, USA
+Maribor, Slovenia
+Madison, Wisconsin, USA
+Macau, China
+Leiden, The Netherlands
+Kloster Irsee, Germany
+Glasgow, Scotland, UK
+Dalian, China
+Cologne, Germany
+Cirencester, UK
+Changsha, China
+Cardiff, UK
+Cannes, France
+Cambridge, United Kingdom
+Calgary, Alberta, Canada
+Buenos Aires, Argentina
+Bari, Italy
+Barcelona, Catalonia, Spain
+Angers, France
+Anchorage, Alaska, USA
+Amalfi, Italy
+Zhangjiajie, China
+Workshop
+Urbana, Illinois, USA
+Udine, Italy
+USA
+Strasbourg, France
+Sozopol, Bulgaria
+Southampton, UK
+Sofia, Bulgaria
+Sao Paulo, Brazil
+Santorini Island, Greece
+Santiago de Compostela, Spain
+Santa Cruz, California, USA
+San Jose, California
+Rhodes, Greece
+Redondo Beach, California, USA
+Qingdao, China
+Poland
+Phuket, Thailand
+Pacific Grove, California, USA
+Orlando, Florida
+Odense, Denmark
+Norfolk, Virginia, USA
+Namur, Belgium
+Montreal, Québec, Canada
+Milovy, Czech Republic
+Melbourne, Victoria, Australia
+Maastricht, The Netherlands
+Lyngby, Denmark
+Lugano, Switzerland
+London, United Kingdom
+Kitakyushu, Japan
+Kanazawa, Japan
+Jyväskylä, Finland
+Jerusalem, Israel
+Huntsville, Alabama, USA
+Hawaii, USA
+Hannover, Germany
+Halifax, Canada
+Hagenberg, Austria
+Göteborg, Sweden
+Galway, Ireland
+Fort Lauderdale, Florida, USA
+Eilat, Israel
+Edinburgh, Scotland
+Dijon, France
+Delhi, India
+Daegu, Korea
+Cracow, Poland
+Coventry, UK
+Cottbus, Germany
+Charlottesville, Virginia, USA
+Chapel Hill, North Carolina, USA
+Chania, Crete Island, Greece
+Catania, Italy
+Canterbury, UK
+Canada
+California, USA
+Calcutta, India
+Cairns, Australia
+Cagliari, Italy
+Buffalo, New York, USA
+Bratislava, Slovakia
+Bled, Slovenia
+Berlin
+Belgium
+Belfast, Northern Ireland, UK
+Avignon, France
+Austin, Texas
+Annecy, France
+Annapolis, Maryland, USA
+Aizu, Japan
+Aix-en-Provence, France
+Yorktown Heights, New York, USA
+Williamsburg, Virginia, USA
+Wellington, New Zealand
+Vilamoura, Portugal
+Victoria, Canada
+Terromolinos, Spain
+Tenerife, Canary Islands, Spain
+Stanford University, California, USA
+Sophia-Antipolis, France
+Sapporo, Japan
+Santorini, Greece
+San Diego, California
+Rousse, Bulgaria
+Rome-Italy
+Quebec City, Canada
+Porto Alegre, Brazil
+Perugia, Italy
+Perth, Western Australia
+Parma, Italy
+Palm Springs, California, USA
+Oldenburg, Germany
+Objects, Desna, Czech Republic
+Nicosia, Cyprus
+Nagoya, Japan
+Málaga, Spain
+Mumbai, India
+Modena, Italy
+Manchester, United Kingdom
+Mallorca, Spain
+Madeira, Portugal
+Luxembourg, Luxembourg
+London, England, UK
+Ljubljana, Slovenia
+Koblenz, Germany
+Kiel, Germany
+Kauai, Hawaii, USA
+Kansas City, Missouri, USA
+Jakarta, Indonesia
+Izmir, Turkey
+Irsee, Germany
+Harbin, China
+Guimarães, Portugal
+Groningen, The Netherlands
+Gramado, Brazil
+Fort Worth, Texas, USA
+Esbjerg, Denmark
+Edinburgh, United Kingdom
+Doha, Qatar
+Dagstuhl, Germany
+Daejeon, Korea
+City, Japan
+Changsha, Hunan, China
+Calgary, Canada
+Brisbane, Queensland, Australia
+Braunschweig, Germany
+Brasilia, Brazil
+Boca Raton, Florida, USA
+Big Island, Hawaii, USA
+Bielefeld, Germany
+Bhubaneswar, India
+Bath, UK
+Bad Honnef, Germany
+Ayia Napa, Cyprus
+Ames, Iowa, USA
+Akademgorodok, Novosibirsk, Russia
+Acapulco, Mexico
+Würzburg, Germany
+Workshops
+Winnipeg, Manitoba, Canada
+Windsor, Ontario, Canada
+West Lafayette, Indiana, USA
+Waterloo, Canada
+Washington, D.C.
+University Park, Pennsylvania, USA
+Trier, Germany
+Tempe, Arizona, USA
+Taiyuan, China
+São Paulo, Brazil
+Szklarska Poreba, Poland
+Swansea, UK
+Stony Brook, New York, USA
+Smolenice, Czechoslovakia
+Shenzhen, China
+Sesimbra, Portugal
+Santander, Spain
+San Sebastián, Spain
+Rotterdam, The Netherlands
+Roma, Italy
+Rocquencourt, France
+Rochester, New York, USA
+Research Triangle Park, North Carolina, USA
+Recife, Brazil
+Queenstown, New Zealand
+Quebec, Canada
+Póvoa de Varzim, Portugal
+Pretoria, South Africa
+Poster
+Pori, Finland
+Piscataway, New Jersey, USA
+Philadelphia, Pennsylvania
+Perpignan, France
+Penang, Malaysia
+Padua, Italy
+Osnabrück, Germany
+Nuremberg, Germany
+Nottingham, UK
+Nijmegen, The Netherlands
+Newark, New Jersey, USA
+New York, USA
+New York City, New York, USA
+Natal, Brazil
+Napoli, Italy
+München, Germany
+Montreux, Switzerland
+Montego Bay, Jamaica
+Mont Saint-Michel, France
+Milwaukee, Wisconsin, USA
+Memphis, Tennessee, USA
+Melbourne, Florida, USA
+Maui, Hawaii, USA
+Marina Del Rey, California, USA
+Mannheim, Germany
+Macao, China
+Luxembourg
+Lund, Sweden
+Louisville, Kentucky, USA
+Limassol, Cyprus
+Leeds, UK
+Las Vegas, Nevada
+Lancaster, UK
+Lake Tahoe, California, USA
+Lake Como, Italy
+Lake Buena Vista, Florida, USA
+Lafayette, Louisiana, USA
+La Jolla, California, USA
+Korea
+Jena, Germany
+Hsinchu, Taiwan
+Hoboken, New Jersey, USA
+Havana, Cuba
+Guadalajara, Mexico
+Greece
+Gothenburg, Sweden
+Gosier, Guadeloupe, France
+Goa, India
+Gaithersburg, Maryland
+Funchal, Madeira Island, Portugal
+Frankfurt/Main, Germany
+Faro, Portugal
+Edmonton, Canada
+Davis, California, USA
+Columbia, Maryland, USA
+Christchurch, New Zealand
+Cholula, Puebla, Mexico
+Chiba, Japan
+Chania, Crete, Greece
+Catania, Sicily, Italy
+Caen, France
+Burlington, Vermont, USA
+Burgos, Spain
+Bucharest, Romania
+Brest, France
+Borovets, Bulgaria
+Bloomington, Indiana, USA
+Bad Honnef
+Augsburg, Germany
+Augsburg, Bavaria, Germany
+Ascona, Switzerland
+Anguilla, British West Indies
+Aizu-Wakamatsu, Japan
+Adelaide, South Australia
+Évora, Portugal
+for Networked Organisations
+Yogyakarta, Indonesia
+Xiamen, China
+Worcester, Massachusetts, USA
+Wollongong, Australia
+Whistler, Canada
+Whistler, British Columbia, Canada
+Vilnius, Lithuania
+Versailles, France
+Venezia, Italy
+Valparaíso, Chile
+Umeå, Sweden
+Tunis, Tunisia
+Tsinghua University, Beijing, China
+Tours, France
+Torremolinos-Málaga, Spain
+Tilburg, The Netherlands
+Tianjin, China
+Tbilisi, Georgia
+Tainan, Taiwan
+Switzerland
+Stirling, Scotland, UK
+St. Augustine, Florida, USA
+Skövde, Sweden
+Shenyang, China
+Sharjah,UAE
+Sevilla, Spain
+Sedona, Arizona, USA
+Sardinia, Italy
+Saratoga Springs, New York, USA
+Sanya, Hainan, China
+Sanya, China
+Santa Margherita Ligure, Italy
+San Sebastian, Spain
+San Francisco, California
+Salvador, Brazil
+Salvador, Bahia, Brazil
+Salerno, Italy
+Sacramento, California, USA
+Rouen, France
+Rostock, Germany
+Rockville, Maryland, USA
+Reinhardsbrunn Castle, Germany
+Redwood City, California, USA
+Reading, UK
+Prague, Czechoslovakia
+Porto de Galinhas, Brazil
+Portland, Oregon
+Port Jefferson, New York, USA
+Poitiers, France
+Pilsen, Czech Republic
+Paris
+Ostrava, Czech Republic
+Orsay, France
+Online
+Omaha, Nebraska, USA
+Oberpfaffenhofen, Germany
+Nürnberg, Germany
+Novi Sad, Serbia
+Noordwijkerhout, Netherlands
+Noida, India
+Niagara Falls, New York, USA
+Newcastle, UK
+Natal, Rio Grande do Norte, Brazil
+Napa, California
+Münster, Germany
+Mumbai, Maharashtra, India
+Monterrey, Mexico
+Miami, USA
+Mauritius
+Massachusetts, USA
+Marrakech, Morocco
+Maebashi City, Japan
+Luxembourg-Kirchberg, Luxembourg
+Lucerne, Switzerland
+Louvain-la-Neuve, Belgium
+Los Angeles, California
+Liège, Belgium
+Lillehammer, Norway
+Lexington, Kentucky, USA
+Lanzhou, China
+Lake Tahoe, Nevada, USA
+Kinsale, Ireland
+Kingston, Canada
+Kharkiv, Ukraine
+Key West, Florida, USA
+Kerkrade, The Netherlands
+Kelowna, British Columbia, Canada
+Kathmandu, Nepal
+Kassel, Germany
+Joensuu, Finland
+Jinhua, China
+Jhongli, Taiwan
+Ireland
+Iowa City, Iowa, USA
+Interlaken, Switzerland
+India, Chennai, India
+Ho Chi Minh City, Vietnam
+Hefei, China
+Harbin, Heilongjiang, China
+Halmstad, Sweden
+Halifax, Nova Scotia, Canada
+Hainan Island, China
+Haikou, China
+Guildford, UK
+Guadeloupe, French Caribbean
+Girona, Spain
+Galveston, Texas, USA
+Fredericton, New Brunswick, Canada
+Fortaleza, Brazil
+Florianópolis, Brazil
+Estes Park, Colorado, USA
+Erice, Italy
+El Paso, Texas, USA
+Dhaka, Bangladesh
+Detroit, Michigan, USA
+Denver, Colorado
+Denmark
+Czech Republic
+Curtea de Arges, Romania
+Curitiba, Brazil
+Corvallis, Oregon, USA
+Colorado Springs, Colorado, USA
+Clemson, South Carolina, USA
+City University of Hong Kong, HKSAR, China
+Cavtat-Dubrovnik, Croatia
+Carleton University, Ottawa, Canada
+Cancún, México
+Cancun, Quintana Roo, Mexico
+Cambridge, Massachusetts
+Cairns, Queensland, Australia
+Budva, Montenegro
+Breckenridge, Colorado, USA
+Brasil
+Bombay, India
+Bern, Switzerland
+Belo Horizonte, Brazil
+Belfast, Northern Ireland
+Bali, Indonesia
+Aveiro, Portugal
+Austria
+Atlantic City, New Jersey, USA
+Antibes, France
+Angra dos Reis, Brazil
+Amman, Jordan
+Alghero, Italy
+Alberta, Canada
+Aachen
+for a Connected Society
+Zhengzhou, China
+Zhang Jia Jie, Hunan, China
+Yilan, Taiwan
+Yaroslavl, Russia
+Yantai, Shandong, China
+Xi-An, China
+Xanthi, Greece
+Wuyishan, China
+Wuhan, Hubei, China
+Workshop, Vienna, Austria
+Workshop, Stockholm, Sweden
+Workshop, Mook, The Netherlands
+Workshop, Montréal, Canada
+Workshop, Grenoble, France
+Workshop, Geneva, Switzerland
+Workshop, Chambéry, France
+Workshop, Berlin, Germany
+Workshop, Barcelona, Spain
+Wisla, Poland
+Windsor, Canada
+Where
+West Point, New York, USA
+Wendisch-Rietz, Germany
+Weihai, China
+Washington, USA
+Washington, D.C, USA
+Warwick, UK
+Warrenton, Virginia, USA
+Waltham, Massachusetts, USA
+Växjö, Sweden
+Vitória, Brazil
+Visegrád, Hungary
+Visegrad, Hungary
+Villach, Austria
+Victoria, Australia
+Venice/Mestre, Italy
+Valparaiso, Chile
+Valletta, Malta
+Valdivia, Chile
+Urbana-Champaign, Illinois, USA
+University of Westminster, London, UK
+University of Western Ontario, London, Ontario, Canada
+Tutorial Text
+Toulouse
+Torun, Poland
+Toledo, Spain
+The Hague, The Netherlands
+Tenerife, Spain
+Temuco, Chile
+Tempe, Arizona
+Tangshan, China
+Talks
+Taipei, Taiwan, ROC
+Taejon, Korea
+Syracuse, New York, USA
+Sydney, NSW, Australia
+Sweden
+Suwon, Korea
+Sunderland, UK
+Storrs, Connecticut, USA
+Stevenson, Washington, USA
+St. Thomas, US Virgin Islands
+St. John's, Newfoundland, Canada
+St. Andrews, UK
+St. Andrews, Scotland, UK
+Sponsored by IFCIS, The Intn'l Foundation on Cooperative Information Systems
+Spindleruv Mlýn, Czech Republic
+Sousse, Tunesia
+Sliema, Malta
+Skokie, USA
+Sintra, Portugal
+Seoul, Korea, September 11, 2006
+Selected Contributions
+Seattle, Washington
+School/Workshop, Noordwijkerhout, The Netherlands
+Schloss Dagstuhl, Germany
+Santa Monica, California, USA
+Sankt Augustin, Germany
+San Remo, Italy
+San Miniato, Italy
+San Mateo, California, USA
+San José, USA
+San José, California, USA
+San Francisco, USA
+San Francisco Bay, California, USA
+Salford, UK
+Sainte Luce, Martinique, France
+Saint-Petersburg, Russia
+Saint-Etienne, France
+Saint Petersburg, Russia
+Rovereto, Italy
+Rotorua, New Zealand
+Rostock Germany
+Riverside, California, USA
+Rio de Janiero, Brazil
+Richmond, Virginia, USA
+Richmond Hill, Ontario, Canada
+Richardson, Texas, USA
+Reno/Tahoe, Nevada, USA
+Reims, France
+Redwood Shores, California, USA
+Redmond, Washington, USA
+Québec City, Canada
+Punta del Este, Uruguay
+Punta Arenas, Chile
+Porto Alegre, RS, Brazil
+Portlan, USA
+Ponta Delgada, Azores, Portugal
+Philadephia, Pennsylvania, USA
+Pathumthani, Thailand
+Park City, Utah, USA
+Paraty, Brazil
+Papeete, Tahiti, French Polynesia
+Papeete, Tahiti
+Palo Alto, California
+Palaiseau, France
+Oxford, England
+Orléans, France
+Orlando, Forida, USA
+Orange County, California, USA
+Opatija, Croatia
+On Embedded Software
+Okinawa, Japan
+Oisterwijk, The Netherlands
+Oak Brook, Illinois, USA
+Nîmes, France
+Nový Smokovec, Slovakia
+Norwich, UK
+Norrköping, Sweden
+Noordwijkerhout, The Netherlands
+Newport, Rhode Island, USA
+Newfoundland, Canada
+New Orleans, Louisiana
+New Haven, Connecticut, USA
+Nagasaki, Japan
+Nafplion, Greece
+Monte Verità, Switzerland
+Monte Verita, Ascona, Switzerland
+Moncton, New Brunswick, Canada
+Mississauga, Ontario, Canada
+Minneapolis, Minnesota
+Milpitas, California, USA
+Metz, France
+Merida, Yucatan, Mexico
+Medina del Campo, Spain
+Medford, Massachusetts, USA
+Maynooth, Ireland
+Matsushima, Japan
+Markham, Ontario, Canada
+Margherita di Pula, Cagliari, Italy
+Mantova, Italy
+Manaus, Brazil
+Malmö, Sweden
+Makuhari, Japan
+Maison de la Chimie, Paris, France
+Main Conference
+Magdeburg, Germany
+Madonna di Campiglio, Italy
+Lucca, Italy
+Loughborough, United Kingdom
+London, England
+London, Canada
+Liverpool, United Kingdom
+Lipari Island, Italy
+Les Diablerets, Switzerland
+Leicester, United Kingdom
+Las Vegas, USA
+Las Palmas, Spain
+Las Palmas, Gran Canaria, Spain
+Las Cruces, New Mexico, USA
+Lake Arrowhead, California, USA
+Laguna Beach, California, USA
+L'Aquila, Italy
+Königswinter, Germany
+Kyoto University, Kyoto, Japan
+Kuressaare, Estonia
+Kuopio, Finland
+Krems, Austria
+Kos Island, Greece
+Kongens Lyngby, Denmark
+Kochi, India
+Knoxville, Tennessee, USA
+Kharagpur, India
+Kennesaw, Georgia, USA
+Kazan, Russia
+Kauai Island, Hawaii, USA
+Karlskrona, Sweden
+Karlovy Vary, Czech Republic
+Kanpur, India
+Juan-les-Pins, France
+Jacksonville, Florida, USA
+Istanbul, Turkey, CDROM
+Isle of Bendor, France
+Island of Kos, Greece
+India, New Delhi, India
+India, Hyderabad, India
+Incheon, Korea
+Imperial College, London, UK
+Ilkley, UK
+Iasi, Romania
+Huang Shan, China
+Hradec Králové, Czech Republic
+Hilton Head, South Carolina, USA
+Herzlia, Israel
+Herzelia, Israel
+Hersonissos, Crete, Greece
+Herrsching, Germany
+Hawthorne, New York, USA
+Hawaii
+Hanover, New Hampshire, USA
+Hamilton, Canada
+Hakodate, Hokkaido, Japan
+Hagen, Germany
+Hachioji, Tokyo, Japan
+Gyeongju, Korea
+Guanajuato, México
+Guadeloupe, French West Indies
+Grindelwald, Switzerland
+Grassau, Germany
+Gosier, Guadeloupe
+Gif-sur-Yvette, France
+Gdynia, Poland
+Garmisch-Partenkirchen, Germany
+Garching, Germany
+Ft. Lauderdale, Florida, USA
+Fribourg, Switzerland
+Frankfurt, Germany
+Fischbachau, Germany
+Firenze, Italy
+Exeter, UK
+Essex, UK
+Edinburgh, Scottland, UK
+Edinburgh
+East Stroudsburg, Pennsylvania, USA
+East Lansing, Michigan, USA
+Durham, North Carolina, USA
+Durham, New Hampshire, USA
+Doctoral Symposium
+Delphi, Greece
+Dayton, Ohio, USA
+Dana Point, California, USA
+Cyprus
+Costa de Caparica, Portugal
+Coruña, Spain
+Cordoba, Spain
+Conference, Montpellier, France
+Conference
+Compiegne, France
+Colombo, Sri Lanka
+Colmar, France
+Coimbatore, India
+Clermont-Ferrand, France
+Clearwater Beach, Florida, USA
+Claremont, California, USA
+Chicago, USA
+Chiang Mai, Thailand
+Chester, UK
+Chantilly, Virginia, USA
+Chantilly, France
+Chamonix, France
+Cesena, Italy
+Cavtat/Dubrovnik, Croatia
+Castro Urdiales, Spain
+Castle of Hagenberg, Austria
+Castiglioncello, Italy
+Castellón, Spain
+Cascais, Portugal
+Capri, Italy
+Cape Breton, Nova Scotia, Canada
+Caparica, Portugal
+Cap Esterel, French Riviera, France
+Canary Islands, Spain
+Campinas, Brazil
+Camogli, Italy
+Cambridge University, Emmanuel College, Cambridge, UK
+Cambridge
+Cagliari, Sardinia, Italy
+Burnaby, British Columbia, Canada
+Brighton, England
+Brazil
+Bradford, West Yorkshire, UK
+Boppard, Germany
+Bodrum, Turkey
+Bochum, Germany
+Biopolis, Singapore
+Big Sky, Montana, USA
+Bernried, Germany
+Benevento, Italy
+Bellevue, Washington, USA
+Belfast, UK
+Belek-Antalya, Turkey
+Baton Rouge, Louisiana, USA
+Barcelona, Catalunya, Spain
+Bandung, Indonesia
+Ballarat, Victoria, Australia
+Balalaika Hotel, Sandton, South Africa
+Bad Neuenahr, Germany
+Bad Malente, Germany
+Bad Herrenalb, Germany
+Aussois, France
+Atlanta, Georgia
+Asilomar, California, USA
+Arlington, Texas, USA
+Apizaco, Mexico
+Antofagasta, Chile
+Antibes Juan-les-Pins, France
+Antalya, Turkey
+Amsterdam, Netherlands
+Algarve, Portugal
+Albufeira, Portugal
+Aizu-Wakamatsu City, Japan
+Agia Napa, Cyprus
+Aberystwyth, UK
+Aberdeen, UK
+Aberdeen, Scotland, UK
