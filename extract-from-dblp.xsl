@@ -195,12 +195,13 @@ noises in <title>
             </xsl:if>
         </xsl:for-each>
     </xsl:template>
+    <xsl:variable name="LastYear" select="year-from-date(current-date())"/>
     <xsl:function name="local:normalize-date">
         <xsl:param name="datestr"/>
         <xsl:variable name="months" select="'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'"/>
         <xsl:if test="$datestr">
             <xsl:variable name="d" select="tokenize(normalize-space($datestr), '\s+')"/>
-            <xsl:number format="0001" value="for $y in number($d[3]) return if ($y &lt; 1960) then (if ($y &lt; 1100) then $y+1000 else 1900+($y mod 100)) else $y"/>
+            <xsl:number format="0001" value="for $y in number($d[3]) return if ($y &lt; 1960) then (if ($y &lt; 1100) then $y+1000 else 1900+($y mod 100)) else if ($y &gt; $LastYear) then $LastYear else $y"/>
             <xsl:text>-</xsl:text>
             <xsl:number format="01" value="index-of($months, $d[2])"/>
             <xsl:text>-</xsl:text>
