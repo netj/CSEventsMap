@@ -200,7 +200,7 @@ noises in <title>
         <xsl:variable name="months" select="'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'"/>
         <xsl:if test="$datestr">
             <xsl:variable name="d" select="tokenize(normalize-space($datestr), '\s+')"/>
-            <xsl:number format="0001" value="$d[3]"/>
+            <xsl:number format="0001" value="for $y in number($d[3]) return if ($y &lt; 1960) then (if ($y &lt; 1100) then $y+1000 else 1900+($y mod 100)) else $y"/>
             <xsl:text>-</xsl:text>
             <xsl:number format="01" value="index-of($months, $d[2])"/>
             <xsl:text>-</xsl:text>
@@ -223,7 +223,7 @@ noises in <title>
                 replace(
                 replace(normalize-space($title)
                 , '[.,-] ((\d{1,3}|[A-Z][^,\s]{1,10})\s+){0,5}?(Papers|Lectures|Vol(\.|umes?)|Part|CD-Rom|Tutorial Notes|Reports|Companion Material|Advanced Course)([, ][^,]*)?$', '', 'i')
-                , '[.,/-]?\s*(Companion |Preliminary |Pre[ -]?|Post[ -]?|)Proc{1,2}ee{0,2}[ds]ings?($|[.,])', '', 'i')
+                , '[.,/-]?\s*(Companion |Preliminary |Pre[ -]?|Post(er)?[ -]?|)Proc{1,2}ee{0,2}[ds]ings?($|[.,])', '', 'i')
                 , '[.,/-]?\s*Proc{1,2}ee{0,2}[ds]ings?( of [^,]+| (Volume|Part)[^,.]+)?[.,]', '', 'i')
                 , '(\s*\([^),.]+\)?\.?|[\].]+|([.,] (co-?located|conjunction|jointly))[^,.]+)$', '', 'i')
                 )
