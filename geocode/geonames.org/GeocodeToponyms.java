@@ -27,6 +27,7 @@ public class GeocodeToponyms {
                         +"\t"+ toponym.getLongitude()
                         +"\t"+ toponym.getName()
                         +"\t"+ toponym.getCountryName()
+                        +"\t"+ toponym.getContinentCode()
                         );
                 break;
             }

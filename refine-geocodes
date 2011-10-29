@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Author: Jaeho.Shin@Stanford.EDU
+# Created: 2011-10-28
+set -eu
+
+Self=`readlink -f "$0"`
+Base=`dirname "$Self"`
+PATH="$Base:$PATH"
+
+cd "$Base"/data
+
+[ -r geonames.org-username ] || { echo "Create data/geonames.org-username!" >&2; false; }
+
+# first, tabularize
+{
+xslt "$Base"/tabularize.xsl <past-conferences.xml
+xslt "$Base"/tabularize.xsl <upcoming-conferences.xml | tail -n +2
+} >raw.tab
+head -n 1 <raw.tab >raw-head.tab
+wc -l raw.tab
+
+if [ -e geocodes.tab ]; then
+    echo geocodes.tab: already exists, skipping...
+    wc -l geocodes.tab
+else
+    # then, extract header and where column
+    {
+        cut -f4 | sort | uniq -c | sort -nr | cut -b 9-
+    } <raw.tab >raw-wheres.tab
+    # and geocode them, if not already done
+    java -cp `cd "$Base"/geocode/geonames.org && for j in . *.jar; do echo -n ":$PWD/$j"; done` \
+        GeocodeToponyms "`cat geonames.org-username`" \
+        raw-wheres.tab | tee geocodes-raw.tab
+    sort -t'	' -k 1 <geocodes-raw.tab >geocodes.tab
+    echo "Where	Latitude	Longitude	City	Country" >geocodes-head.tab
+    wc -l geocodes.tab
+fi
+
+# finally, join them to create the final result
+(
+    LC_ALL=C
+    format=1.1,1.2,1.3,2.2,2.3,2.4,2.5,1.5,1.6,1.7
+    sort -t'	' -k 4.1 <raw.tab >raw.tab.sorted
+    join -t'	' -1 4 -2 1 -o "$format" raw-head.tab geocodes-head.tab
+    join -t'	' -1 4 -2 1 -o "$format" -e "" raw.tab.sorted geocodes.tab
+) >conferences.tab
+wc -l conferences.tab
+
+# TODO convert it to JSON

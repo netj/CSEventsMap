@@ -11,12 +11,14 @@
         <xsl:variable name="alias" select="normalize-space(replace(replace(replace($name, '.*\(', ''), '\).*', ''), '[ -]?(\d{2,4}-\d{2}|\d{2,4})$', ''))"/>
         <xsl:variable name="when"  select="normalize-space(substring-before(substring-after($text, 'Date:'), '&#10;'))"/>
         <xsl:variable name="where" select="normalize-space(substring-before(substring-after($text, 'Location:'), '&#10;'))"/>
+        <xsl:variable name="url" select="normalize-space(substring-before(substring-after($text, 'Url:'), '&#10;'))"/>
         <xsl:if test="$alias and $when and $where">
             <c>
                 <xsl:attribute name="alias" select="$alias"/>
                 <xsl:attribute name="where" select="$where"/>
                 <xsl:attribute name="begin" select="local:normalize-date(substring-before($when, ' to '))"/>
                 <xsl:attribute name="end"   select="local:normalize-date(substring-after($when, ' to '))"/>
+                <xsl:attribute name="url"   select="$url"/>
                 <xsl:value-of select="$name"/>
             </c>
         </xsl:if>
