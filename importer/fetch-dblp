@@ -5,9 +5,9 @@ set -eu
 
 Self=`readlink -f "$0"`
 Base=`dirname "$Self"`
-PATH="$Base:$PATH"
+PATH="$Base:$Base/../util:$PATH"
 
-cd "$Base"/data
+cd "$Base"/../data
 
 # fetch fresh dblp.xml.gz
 fetch http://dblp.uni-trier.de/xml/dblp.xml.gz

@@ -5,9 +5,9 @@ set -eu
 
 Self=`readlink -f "$0"`
 Base=`dirname "$Self"`
-PATH="$Base:$PATH"
+PATH="$Base:$Base/../util:$PATH"
 
-cd "$Base"/data
+cd "$Base"/../data
 
 [ -r geonames.org-username ] || { echo "Create data/geonames.org-username!" >&2; false; }
 
