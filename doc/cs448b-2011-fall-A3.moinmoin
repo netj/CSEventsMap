@@ -1,0 +1,59 @@
+= Computer Science Academic Events Map =
+
+Jaeho Shin
+
+(Place teaser image of visualization here, linked to running version.)
+
+
+== Description ==
+
+Describe your visualization here, including choice of visual encodings and interaction technique(s).
+
+
+== Source Files ==
+
+Place a link to your source code archive here. The archive should be uploaded as an attachment to this page.
+
+== Design Notebook ==
+
+My data domain of choice is the '''Locations of Past and Upcoming Computer Science Conferences'''.  The data mainly comes from [http://www.informatik.uni-trier.de/~ley/db/ The DBLP Computer Science Bibliography] for past ones and from [http://www.st.ewi.tudelft.nl/~mathijs/conf/ Confy, My Computer Science Conference Agent] for the upcoming ones.  The goal of my visualization is to let computer science researchers to see where their events are held around the world, and hopefully provide them another criterion for choosing venues to publish or attend.  There are about 12k records from them that have location and date information I could extract from them.  More data from other sources, e.g. [http://www.computer.org/portal/web/conferences/calendar IEEE Conference Calendar] or [http://campus.acm.org/calendar/event_listing.cfm ACM Events], should be taken into account to provide more complete picture.  However, due to the excessive amount of effort required for incorporating data from them, and for the scope of this assignment, I think it is fine to proceed with DBLP and Confy.
+
+It is hard to imagine there are people who pick their venue for publishing primarily by where it is held instead of the impact factor or other metrics.  However, there are many researchers who mention the opportunities to travel around the world by attending conferences and workshops as a big privilege of academic jobs.  Moreover, I became aware of an interesting culture about IEEE Symposia on VLSI Technology and Circuits.  They have been helding the event in Hawaii, USA and Kyoto, Japan for every other years, and a friend of mine told me there's a culture submitting to Hawaii first and then retrying to Kyoto next year when they get rejected.  It would be great if my visualization can help people to discover interesting facts from bibliographical data other than all boring citation links, co-authorships, etc...
+
+
+Here's the storyboard of my CS Events Map:
+
+ 1. User will see three screens: a map, a yearly stats with a slider, and a list of conferences and workshops that are shown in them.
+
+ attachment:A3-ShinJaeho-storyboard-1-overview.png
+
+ 2. User can select a region in the map to zoom in.
+
+ attachment:A3-ShinJaeho-storyboard-2-mapzoom.png
+
+ It will give users detail-on-demand, updating other views with only the events held or to be held in that geographical region.
+
+ attachment:A3-ShinJaeho-storyboard-3-mapzoomresult.png
+
+ 3. Year range slider will allow user to limit the events based on when it was held.
+
+ attachment:A3-ShinJaeho-storyboard-4-yearslider.png
+
+ 4. By clicking on the list the user will be able to open the actual webpage which shows the program of the event or the homepage for submission and registration.
+
+ attachment:A3-ShinJaeho-storyboard-5-listclick.png
+
+
+
+== Changes to Storyboard ==
+
+Describe the changes you made between your storyboard and final version here.
+
+== Division of Labor ==
+
+Describe how work was divided among team members. Individual assignments can omit this section.
+
+== Commentary ==
+
+Provide a commentary on the development process, including answers to the following questions: Roughly how much time did you spend developing your application? What aspects took the most time?
+
