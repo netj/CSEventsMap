@@ -1,0 +1,19 @@
+#!/usr/bin/perl -w
+# Convert tab-separated text to JSON
+# Author: Jaeho Shin <netj@sparcs.org>
+# Created: 2011-10-31
+use strict;
+use JSON;
+
+my $first_line = <>;
+my @names = split /\t+/, $first_line;
+
+my @records;
+while (my $line = <>) {
+    my $r = {};
+    my @values = split /\t+/, $line;
+    $r->{$_} = shift @values foreach @names;
+    push @records, $r;
+}
+
+print encode_json \@records;
