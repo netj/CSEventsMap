@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <title>Mercator Projection</title>
+    <title>Computer Science Academic Events Map</title>
     <script type="text/javascript" src="d3/d3.js"></script>
     <script type="text/javascript" src="d3/d3.geo.js"></script>
     <script type="text/javascript" src="d3/lib/jquery/jquery.min.js"></script>
@@ -16,84 +16,117 @@ body, .ui-widget {
 }
 
 svg {
-  width: 960px;
-  height: 500px;
-  border: solid 1px #ccc;
-  background: #eee;
+  width: 800px;
+  height: 600px;
+  background-color: #111;
 }
 
-line {
-  stroke: brown;
-  stroke-dasharray: 4,2;
+#countries path {
+  fill: #333;
+  stroke: #eee;
 }
 
-path {
-  fill: #ccc;
-  stroke: #fff;
+#eventsMap .event {
+    fill: rgba(255,192,32, 0.3);
 }
 
-div {
-  width: 960px;
+#eventsMap .event:hover, #eventsMap .event:active {
+    stroke: #f00;
 }
 
     </style>
   </head>
   <body>
-    <h3>Mercator Projection</h3>
+    <h3>Computer Science Academic Events Map</h3>
     <script type="text/javascript">
+// Code derived from d3's Mercator Projection example
 
 // Our projection.
 var xy = d3.geo.mercator(),
     path = d3.geo.path().projection(xy);
 
-var states = d3.select("body")
+var map = d3.select("body")
   .append("svg:svg")
+    .attr("id", "map");
+var countries = map
   .append("svg:g")
-    .attr("id", "states");
-
-var equator = d3.select("svg")
-  .append("svg:line")
-    .attr("x1", "0%")
-    .attr("x2", "100%");
+    .attr("id", "countries");
 
 d3.json("d3/examples/data/world-countries.json", function(collection) {
-
-  states
+  countries
     .selectAll("path")
       .data(collection.features)
     .enter().append("svg:path")
       .attr("d", path)
     .append("svg:title")
       .text(function(d) { return d.properties.name; });
-
-  equator
-      .attr("y1", xy([0, 0])[1])
-      .attr("y2", xy([0, 0])[1])
 });
 
 function refresh() {
-  states
+  countries
     .selectAll("path")
       .attr("d", path);
-
-  equator
-      .attr("y1", xy([0, 0])[1])
-      .attr("y2", xy([0, 0])[1])
-
-  d3.select("#scale span")
-      .text(xy.scale());
-  d3.select("#translate-x span")
-      .text(xy.translate()[0]);
-  d3.select("#translate-y span")
-      .text(xy.translate()[1]);
 }
 
+function indexBy(records, keyfn) {
+    var index = {};
+    for (var i in records) {
+        var r = records[i];
+        var k = keyfn(r);
+        if (index[k] == null)
+            index[k] = [];
+        index[k].push(r);
+    }
+    return index;
+}
+
+var eventsMap = map.append("svg:g")
+    .attr("id", "eventsMap");
+
+var ID = function(d) { return d; };
+var proj = function(name) { return function(d) { return d[name]; }; }
+d3.map = function(arr, fn) {
+    var mapped = [];
+    for (var i=0; arr.length>i; i++)
+        mapped.push(fn(arr[i]));
+    return mapped;
+};
+
+var longitude = function(d) { return d[0].longitude; };
+var latitude = function(d) { return d[0].latitude; };
+
+// load events data
+var allEvents;
+var allEventsByLocation;
 d3.json("data/conferences.json", function(data) {
-        alert(data.length);
-        window.data = data;
+        allEvents = data;
+        allEventsByLocation = indexBy(allEvents,
+            function(d) { return d.latitude+","+d.longitude; });
+
+        var events = d3.values(allEventsByLocation);
+        var maxCount = d3.max(events, function(d) { return d.length; });
+        var bubbleScale = d3.scale.linear()
+            .domain([1, maxCount])
+            .range([1, 10])
+
+        eventsMap
+          .selectAll(".event")
+            .data(events)
+          .enter().append("svg:circle")
+            .attr("class", "event")
+            .attr("cx", function(d) { return xy([d[0].longitude, d[0].latitude])[0]; })
+            .attr("cy", function(d) { return xy([d[0].longitude, d[0].latitude])[1]; })
+            .attr("r", function(d) { return bubbleScale(d.length); })
+            .on("click", function(d) { console.log(d3.map(d, proj("title"))); })
+          .append("svg:title")
+            .text(function(d) { return d.length; })
+            ;
 });
 
-    </script><p>
+    </script>
+    
+    <!--
+    <p>
     <div id="scale">scale: <span>500</span></div><p>
     <div id="translate-x">translate.x: <span>480</span></div>
     <div id="translate-y">translate.y: <span>250</span></div>
@@ -134,5 +167,6 @@ $("#translate-y").slider({
 });
 
     </script>
+    -->
   </body>
 </html>
