@@ -232,9 +232,18 @@ d3.json("data/conferences.json", function(data) {
       refresh();
     }
   });
-  // TODO validate entered values
-  $("#yearL").val(minYear).change(function() { yearSlider.slider("values", [this.value, $("#yearU")[0].value]); });
-  $("#yearU").val(maxYear).change(function() { yearSlider.slider("values", [$("#yearL")[0].value, this.value]); });;
+  // validate entered values
+  var validateYearInput = function(i) {
+    var y = parseInt(i.value);
+    if (y > maxYear)
+      y = maxYear;
+    else if (y < minYear)
+      y = minYear;
+    i.value = y;
+    return y;
+  };
+  $("#yearL").val(minYear).change(function() { yearSlider.slider("values", [validateYearInput(this), $("#yearU")[0].value]); });
+  $("#yearU").val(maxYear).change(function() { yearSlider.slider("values", [$("#yearL")[0].value, validateYearInput(this)]); });;
 });
 
 function showDetails(groups) {
