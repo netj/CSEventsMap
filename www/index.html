@@ -8,37 +8,81 @@
     <script type="text/javascript" src="d3/lib/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="d3/lib/jquery-ui/jquery-ui.min.js"></script>
     <style type="text/css">
+        @import url("d3/lib/jquery-ui/jquery-ui.css");
 
-@import url("d3/lib/jquery-ui/jquery-ui.css");
+        body, .ui-widget {
+            font: 14px 'Helvetica Neue';
+        }
 
-body, .ui-widget {
-  font: 14px Helvetica Neue;
-}
+        body {
+          font-size: 10px;
+          color: #fff;
+          margin: 10px; padding: 10px;
+        }
 
-svg {
-  width: 800px;
-  height: 600px;
-  background-color: #111;
-}
+        h1, h2 { margin: 0; }
+        h1 { font-size: 12px; }
+        h2 { font-size: 11px; }
 
-#countries path {
-  fill: #333;
-  stroke: #eee;
-}
+        .frame { position: absolute; }
+        #title {
+          left: 3px;
+          bottom: 3px;
+        }
+        #caption {
+          right: 3px;
+          bottom: 3px;
+        }
+        #map, #yearly, #list {}
 
-#eventsMap .event {
-    fill: rgba(255,192,32, 0.3);
-}
+        svg {
+          z-index: -1;
+          display: block;
+          position: absolute;
+          top: 0px;
+          left: 0px;
+          right: 0px;
+          margin-right: 200px;
+          background-color: #000;
+          border: 1px solid #fff;
+        }
 
-#eventsMap .event:hover, #eventsMap .event:active {
-    stroke: #f00;
-}
+        #countries path {
+            fill: #333;
+            stroke: #eee;
+        }
 
+        #eventsMap .event {
+            fill: rgba(255,192,32, 0.3);
+        }
+        #eventsMap .event:hover, #eventsMap .event:active {
+            stroke: #f00;
+        }
     </style>
   </head>
+
   <body>
-    <h3>Computer Science Academic Events Map</h3>
-    <script type="text/javascript">
+
+<h1 id="title" class="frame" style="display: inline;">Computer Science Academic Events Map</h1>
+<div id="caption" class="frame">
+Source:
+<a href="http://www.informatik.uni-trier.de/~ley/db/">DBLP</a>,
+<a href="http://www.st.ewi.tudelft.nl/~mathijs/conf/">Confy</a>.
+</div>
+
+<div id="map" class="frame"></div>
+    
+<div id="yearly" class="frame">
+  <h2>Yearly Stats</h2>
+  <div id="yearlystats"></div>
+  <div id="year-range-slider"></div>
+  <input type="text" size="4" id="yearL"> ~ <input type="text" size="4" id="yearU">
+</div>
+
+<div id="list" class="frame">
+</div>
+
+<script type="text/javascript">
 // Code derived from d3's Mercator Projection example
 
 // Our projection.
@@ -68,6 +112,15 @@ function refresh() {
       .attr("d", path);
 }
 
+d3.id = function(d) { return d; };
+d3.proj = function(name) { return function(d) { return d[name]; }; }
+d3.map = function(arr, fn) {
+    var mapped = [];
+    for (var i=0; arr.length>i; i++)
+        mapped.push(fn(arr[i]));
+    return mapped;
+};
+
 function indexBy(records, keyfn) {
     var index = {};
     for (var i in records) {
@@ -83,15 +136,6 @@ function indexBy(records, keyfn) {
 var eventsMap = map.append("svg:g")
     .attr("id", "eventsMap");
 
-var ID = function(d) { return d; };
-var proj = function(name) { return function(d) { return d[name]; }; }
-d3.map = function(arr, fn) {
-    var mapped = [];
-    for (var i=0; arr.length>i; i++)
-        mapped.push(fn(arr[i]));
-    return mapped;
-};
-
 var longitude = function(d) { return d[0].longitude; };
 var latitude = function(d) { return d[0].latitude; };
 
@@ -99,74 +143,50 @@ var latitude = function(d) { return d[0].latitude; };
 var allEvents;
 var allEventsByLocation;
 d3.json("data/conferences.json", function(data) {
-        allEvents = data;
-        allEventsByLocation = indexBy(allEvents,
-            function(d) { return d.latitude+","+d.longitude; });
+  allEvents = data;
+  allEventsByLocation = indexBy(allEvents,
+      function(d) { return d.latitude+","+d.longitude; });
 
-        var events = d3.values(allEventsByLocation);
-        var maxCount = d3.max(events, function(d) { return d.length; });
-        var bubbleScale = d3.scale.linear()
-            .domain([1, maxCount])
-            .range([1, 10])
+  var events = d3.values(allEventsByLocation);
+  var maxCount = d3.max(events, function(d) { return d.length; });
+  var bubbleScale = d3.scale.linear()
+      .domain([1, maxCount])
+      .range([1, 10])
 
-        eventsMap
-          .selectAll(".event")
-            .data(events)
-          .enter().append("svg:circle")
-            .attr("class", "event")
-            .attr("cx", function(d) { return xy([d[0].longitude, d[0].latitude])[0]; })
-            .attr("cy", function(d) { return xy([d[0].longitude, d[0].latitude])[1]; })
-            .attr("r", function(d) { return bubbleScale(d.length); })
-            .on("click", function(d) { console.log(d3.map(d, proj("title"))); })
-          .append("svg:title")
-            .text(function(d) { return d.length; })
-            ;
+  eventsMap
+    .selectAll(".event")
+      .data(events)
+    .enter().append("svg:circle")
+      .attr("class", "event")
+      .attr("cx", function(d) { return xy([d[0].longitude, d[0].latitude])[0]; })
+      .attr("cy", function(d) { return xy([d[0].longitude, d[0].latitude])[1]; })
+      .attr("r", function(d) { return bubbleScale(d.length); })
+      .on("click", function(d) { console.log(d3.map(d, d3.proj("title"))); })
+    .append("svg:title")
+      .text(function(d) { return d.length; })
+      ;
+
+  var year = function(d) { return parseInt(d.begins.replace(/-.*$/, "")); };
+  var minYear = d3.min(allEvents, year);
+  var maxYear = d3.max(allEvents, year);
+
+  // prepare the year range scale
+  var yearSlider = $("#year-range-slider").slider({
+    range: true,
+    min: minYear,
+    max: maxYear,
+    step: 1,
+    values: [minYear, maxYear],
+    slide: function(event, ui) {
+      $("#yearL").val(ui.values[0]);
+      $("#yearU").val(ui.values[1]);
+    }
+  });
+  $("#yearL").val(minYear).change(function() { yearSlider.slider("values", [this.value, $("#yearU")[0].value]); });
+  $("#yearU").val(maxYear).change(function() { yearSlider.slider("values", [$("#yearU")[0].value, this.value]); });;
+  
 });
 
     </script>
-    
-    <!--
-    <p>
-    <div id="scale">scale: <span>500</span></div><p>
-    <div id="translate-x">translate.x: <span>480</span></div>
-    <div id="translate-y">translate.y: <span>250</span></div>
-    <script type="text/javascript">
-
-$("#scale").slider({
-  min: 0,
-  max: 3000,
-  value: 500,
-  slide: function(event, ui) {
-    xy.scale(ui.value);
-    refresh();
-  }
-});
-
-$("#translate-x").slider({
-  min: -2000,
-  max: 2000,
-  value: 480,
-  slide: function(event, ui) {
-    var translate = xy.translate();
-    translate[0] = ui.value;
-    xy.translate(translate);
-    refresh();
-  }
-});
-
-$("#translate-y").slider({
-  min: -2000,
-  max: 2000,
-  value: 250,
-  slide: function(event, ui) {
-    var translate = xy.translate();
-    translate[1] = ui.value;
-    xy.translate(translate);
-    refresh();
-  }
-});
-
-    </script>
-    -->
   </body>
 </html>
