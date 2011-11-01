@@ -88,6 +88,11 @@ function refresh() {
       .text(xy.translate()[1]);
 }
 
+d3.json("data/conferences.json", function(data) {
+        alert(data.length);
+        window.data = data;
+});
+
     </script><p>
     <div id="scale">scale: <span>500</span></div><p>
     <div id="translate-x">translate.x: <span>480</span></div>
