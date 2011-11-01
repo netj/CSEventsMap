@@ -10,7 +10,7 @@
     <style type="text/css">
         @import url("d3/lib/jquery-ui/jquery-ui.css");
 
-      /* XXX debug */ .frame { border: 1px solid #f00; }
+        /* XXX debug */ .frame { border: 1px solid #f00; } svg { border: 1px solid red; }
 
         body, .ui-widget {
             font: 14px 'Helvetica Neue';
@@ -51,7 +51,12 @@
           right: 260px;
           padding: 10px;
         }
-        #year-range-slider { height: 5px; margin: 10px 10px; background: #222; border-color: #444; }
+        #year-range-slider {
+          height: 5px;
+          margin: 5px 10px;
+          background: #222;
+          border-color: #444;
+        }
         #year-range-slider .ui-slider-range {
           background: #a81;
           cursor: pointer;
@@ -67,6 +72,13 @@
           color: inherit;
           border: 1px solid #999;
           text-align: center;
+        }
+        #yearly svg {
+          height: 80px;
+          bottom: 0px;
+        }
+        #yearly-stats rect {
+          fill: #a81;
         }
 
         #details {
@@ -101,12 +113,12 @@
           left: 10px;
         }
 
-        svg {
+        #map svg {
           width: 100%;
           height: 100%;
           cursor: url(http://www.worldtimzone.com/mozilla/testcase/css3cursors_files/grab.gif);
         }
-        svg.dragging {
+        #map svg.dragging {
           cursor: url(http://www.worldtimzone.com/mozilla/testcase/css3cursors_files/grabbing.gif);
         }
 
@@ -142,7 +154,7 @@ Source:
     
 <div id="yearly" class="frame">
   <h2 class="subtitle">Yearly Stats <input type="text" size="4" id="yearL"> ~ <input type="text" size="4" id="yearU"></h2>
-  <div id="yearlystats"></div>
+  <div id="yearly-stats"></div>
   <div id="year-range-slider"></div>
 </div>
 
@@ -164,6 +176,11 @@ var map = d3.select("#map")
 var countries = map
   .append("svg:g")
     .attr("id", "countries");
+var eventsMap = map.append("svg:g")
+    .attr("id", "eventsMap");
+var yearlyStats = d3.select("#yearly-stats")
+  .append("svg:svg")
+    .attr("id", "yearly-stats-canvas");
 
 d3.json("d3/examples/data/world-countries.json", function(collection) {
   countries
@@ -174,12 +191,6 @@ d3.json("d3/examples/data/world-countries.json", function(collection) {
     .append("svg:title")
       .text(function(d) { return d.properties.name; });
 });
-
-function refresh() {
-  countries
-    .selectAll("path")
-      .attr("d", path);
-}
 
 d3.id = function(d) { return d; };
 d3.proj = function(name) { return function(d) { return d[name]; }; }
@@ -196,18 +207,80 @@ function indexBy(records, keyfn) {
     return index;
 }
 
-var eventsMap = map.append("svg:g")
-    .attr("id", "eventsMap");
-
+var useFirstInGroup = function(use) { return function(d) { return use(d[0]); }; };
+var useLength  = function(d) { return d.length; };
 var useYear = function(d) { return parseInt(d.begins.replace(/-.*$/, "")); };
 var useTitle = function(d) { return d.title; }
 
-// load events data
 var allEvents;
-var allEventsByLocation;
+
+function showYearly() {
+  var canvas = $("#yearly-stats svg")[0];
+  var width = canvas.offsetWidth;
+  var height = canvas.offsetHeight;
+
+  var eventGroupsByYear = indexBy(allEvents, useYear);
+  var yearGroups = d3.values(eventGroupsByYear);
+  var minYear = d3.min(yearGroups, useFirstInGroup(useYear));
+  var maxYear = d3.max(yearGroups, useFirstInGroup(useYear));
+  var x = d3.scale.linear()
+      .domain([minYear, maxYear])
+      .range([0, width])
+      ;
+  var maxCount = d3.max(yearGroups, useLength);
+  var y = d3.scale.linear()
+      .domain([0, maxCount])
+      .range([0, height])
+      ;
+
+  var barWidthToSpacing = 0.8;
+  var barWidth = (width / (maxYear - minYear + 1)) * barWidthToSpacing;
+
+  yearlyStats
+    .selectAll("rect")
+      .data(yearGroups, function(d) { return useYear(d[0]); })
+    .enter().append("svg:rect")
+      .attr("x", function(d) { return x(useYear(d[0])); })
+      .attr("y", function(d) { return height - y(d.length); })
+      .attr("height", function(d) { return y(d.length); })
+      .attr("width", barWidth)
+      ;
+}
+
+
+function showDetails(groups) {
+  // TODO sorting?
+  var eventsInInterest = groups.reduce(function(a,b){ return a.concat(b); })
+  d3.select("#list")
+    .selectAll("li")
+      .data(eventsInInterest, useTitle)
+    .enter().append("li")
+    .append("a")
+      .attr("href", generateURL)
+      .text(useTitle)
+      ;
+  d3.select("#list")
+    .selectAll("li")
+      .data(eventsInInterest, useTitle)
+    .exit().remove()
+    ;
+}
+function generateURL(conf) {
+  return conf.url;
+}
+
+
+function refresh() {
+  countries
+    .selectAll("path")
+      .attr("d", path);
+}
+
+
+// load events data
 d3.json("data/conferences.json", function(data) {
   allEvents = data;
-  allEventsByLocation = indexBy(allEvents,
+  var allEventsByLocation = indexBy(allEvents,
       function(d) { return d.latitude+","+d.longitude; });
 
   var events = d3.values(allEventsByLocation);
@@ -257,29 +330,11 @@ d3.json("data/conferences.json", function(data) {
   };
   $("#yearL").val(minYear).change(function() { yearSlider.slider("values", [validateYearInput(this), $("#yearU")[0].value]); });
   $("#yearU").val(maxYear).change(function() { yearSlider.slider("values", [$("#yearL")[0].value, validateYearInput(this)]); });;
+
+  showYearly();
+
 });
 
-function showDetails(groups) {
-  // TODO sorting?
-  var eventsInInterest = groups.reduce(function(a,b){ return a.concat(b); })
-  d3.select("#list")
-    .selectAll("li")
-      .data(eventsInInterest, useTitle)
-    .enter().append("li")
-    .append("a")
-      .attr("href", generateURL)
-      .text(useTitle)
-      ;
-  d3.select("#list")
-    .selectAll("li")
-      .data(eventsInInterest, useTitle)
-    .exit().remove()
-    ;
-}
-
-function generateURL(conf) {
-  return conf.url;
-}
     </script>
   </body>
 </html>
