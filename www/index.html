@@ -52,8 +52,16 @@
           padding: 10px;
         }
         #year-range-slider { height: 5px; margin: 10px 10px; background: #222; border-color: #444; }
-        #year-range-slider .ui-slider-range { background: #a81; }
-        #year-range-slider .ui-slider-handle { height: 10px; background: #666; border-color: #999; }
+        #year-range-slider .ui-slider-range {
+          background: #a81;
+          cursor: pointer;
+        }
+        #year-range-slider .ui-slider-handle {
+          height: 10px;
+          background: #666;
+          border-color: #999;
+          cursor: pointer;
+        }
         #yearly .subtitle input {
           background-color: inherit;
           color: inherit;
@@ -96,6 +104,10 @@
         svg {
           width: 100%;
           height: 100%;
+          cursor: url(http://www.worldtimzone.com/mozilla/testcase/css3cursors_files/grab.gif);
+        }
+        svg.dragging {
+          cursor: url(http://www.worldtimzone.com/mozilla/testcase/css3cursors_files/grabbing.gif);
         }
 
         #countries path {
@@ -105,6 +117,7 @@
 
         #eventsMap .event {
             fill: rgba(255,192,32, 0.3);
+            cursor: pointer;
         }
         #eventsMap .event:hover, #eventsMap .event:active {
             stroke: #f44;
