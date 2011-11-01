@@ -8,8 +8,9 @@
     <script type="text/javascript" src="d3/lib/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="d3/lib/jquery-ui/jquery-ui.min.js"></script>
     <style type="text/css">
-      /* XXX debug */ .frame { border: 1px solid #f00; }
         @import url("d3/lib/jquery-ui/jquery-ui.css");
+
+      /* XXX debug */ .frame { border: 1px solid #f00; }
 
         body, .ui-widget {
             font: 14px 'Helvetica Neue';
@@ -50,9 +51,10 @@
           right: 260px;
           padding: 10px;
         }
-        #year-range-slider { height: 5px; margin: 10px 10px; }
-        #year-range-slider .ui-slider-handle { height: 10px; }
-        #yearly input {
+        #year-range-slider { height: 5px; margin: 10px 10px; background: #222; border-color: #444; }
+        #year-range-slider .ui-slider-range { background: #a81; }
+        #year-range-slider .ui-slider-handle { height: 10px; background: #666; border-color: #999; }
+        #yearly .subtitle input {
           background-color: inherit;
           color: inherit;
           border: 1px solid #999;
@@ -126,10 +128,9 @@ Source:
 </div>
     
 <div id="yearly" class="frame">
-  <h2 class="subtitle">Yearly Stats</h2>
+  <h2 class="subtitle">Yearly Stats <input type="text" size="4" id="yearL"> ~ <input type="text" size="4" id="yearU"></h2>
   <div id="yearlystats"></div>
   <div id="year-range-slider"></div>
-  <input type="text" size="4" id="yearL"> ~ <input type="text" size="4" id="yearU">
 </div>
 
 <div id="details" class="frame">
@@ -234,7 +235,6 @@ d3.json("data/conferences.json", function(data) {
   // TODO validate entered values
   $("#yearL").val(minYear).change(function() { yearSlider.slider("values", [this.value, $("#yearU")[0].value]); });
   $("#yearU").val(maxYear).change(function() { yearSlider.slider("values", [$("#yearL")[0].value, this.value]); });;
-  
 });
 
 function showDetails(groups) {
