@@ -2,6 +2,8 @@
 
     <xsl:output exclude-result-prefixes="local"/>
 
+    <xsl:variable name="DBLPBaseURL" select="'http://dblp.uni-trier.de/'"/>
+
     <xsl:template match="/dblp">
         <past-conferences>
             <xsl:text>&#10;</xsl:text>
@@ -54,7 +56,7 @@
                 <xsl:attribute name="alias" select="$alias"/>
                 <xsl:attribute name="where" select="local:normalize-where($where/where[1]/@where)"/>
                 <xsl:copy-of select="$when/when[1]/(@begin | @end)"/>
-                <xsl:attribute name="url" select="url"/>
+                <xsl:attribute name="url" select="concat($DBLPBaseURL, string(url[1]))"/>
                 <xsl:value-of select="title"/>
                 <!-- XXX couldn't clean up everything: replace(title, ' - Volume [^,]+|, Volume [^,]+|,? Part [I1]+|, (Revised )?Selected Papers$', '')"/> -->
             </c>

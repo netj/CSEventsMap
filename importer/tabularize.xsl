@@ -13,7 +13,7 @@
         <xsl:text>&#9;</xsl:text>
         <xsl:text>DBLP key</xsl:text>
         <xsl:text>&#9;</xsl:text>
-        <xsl:text>DBLP URL</xsl:text>
+        <xsl:text>URL</xsl:text>
         <xsl:text>&#9;</xsl:text>
         <xsl:text>Title</xsl:text>
         <xsl:text>&#10;</xsl:text>
