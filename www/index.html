@@ -15,9 +15,16 @@
         }
 
         body {
-          font-size: 10px;
-          color: #fff;
-          margin: 10px; padding: 10px;
+          font-size: 12px;
+          color: #999;
+          margin: 0px; padding: 0px;
+        }
+        a {
+          color: #c93;
+          text-decoration: none;
+        }
+        a:hover {
+          color: #f88;
         }
 
         h1, h2 { margin: 0; }
@@ -33,30 +40,40 @@
           right: 3px;
           bottom: 3px;
         }
-        #map, #yearly, #list {}
+        #list {
+          bottom: 20px;
+          left: 10px;
+          right: 10px;
+          height: 200px;
+          overflow: auto;
+          background-color: #222;
+          padding: 10px 25px;
+          border: 1px solid #444;
+          border-radius: 10px;
+          box-shadow: 0px 2px 15px #444;
+        }
 
-        svg {
+        #map {
           z-index: -1;
           display: block;
-          position: absolute;
           top: 0px;
           left: 0px;
           right: 0px;
+          bottom: 200px;
           margin-right: 200px;
           background-color: #000;
-          border: 1px solid #fff;
         }
 
         #countries path {
-            fill: #333;
-            stroke: #eee;
+            fill: #222;
+            stroke: #444;
         }
 
         #eventsMap .event {
             fill: rgba(255,192,32, 0.3);
         }
         #eventsMap .event:hover, #eventsMap .event:active {
-            stroke: #f00;
+            stroke: #f44;
         }
     </style>
   </head>
@@ -66,8 +83,8 @@
 <h1 id="title" class="frame" style="display: inline;">Computer Science Academic Events Map</h1>
 <div id="caption" class="frame">
 Source:
-<a href="http://www.informatik.uni-trier.de/~ley/db/">DBLP</a>,
-<a href="http://www.st.ewi.tudelft.nl/~mathijs/conf/">Confy</a>.
+<a href="http://www.informatik.uni-trier.de/~ley/db/">DBLP XML</a>,
+<a href="http://www.st.ewi.tudelft.nl/~mathijs/conf/">Confy RSS</a>.
 </div>
 
 <div id="map" class="frame"></div>
@@ -79,8 +96,8 @@ Source:
   <input type="text" size="4" id="yearL"> ~ <input type="text" size="4" id="yearU">
 </div>
 
-<div id="list" class="frame">
-</div>
+<ul id="list" class="frame">
+</ul>
 
 <script type="text/javascript">
 // Code derived from d3's Mercator Projection example
@@ -114,12 +131,6 @@ function refresh() {
 
 d3.id = function(d) { return d; };
 d3.proj = function(name) { return function(d) { return d[name]; }; }
-d3.map = function(arr, fn) {
-    var mapped = [];
-    for (var i=0; arr.length>i; i++)
-        mapped.push(fn(arr[i]));
-    return mapped;
-};
 
 function indexBy(records, keyfn) {
     var index = {};
@@ -136,8 +147,8 @@ function indexBy(records, keyfn) {
 var eventsMap = map.append("svg:g")
     .attr("id", "eventsMap");
 
-var longitude = function(d) { return d[0].longitude; };
-var latitude = function(d) { return d[0].latitude; };
+var useYear = function(d) { return parseInt(d.begins.replace(/-.*$/, "")); };
+var useTitle = function(d) { return d.title; }
 
 // load events data
 var allEvents;
@@ -161,14 +172,13 @@ d3.json("data/conferences.json", function(data) {
       .attr("cx", function(d) { return xy([d[0].longitude, d[0].latitude])[0]; })
       .attr("cy", function(d) { return xy([d[0].longitude, d[0].latitude])[1]; })
       .attr("r", function(d) { return bubbleScale(d.length); })
-      .on("click", function(d) { console.log(d3.map(d, d3.proj("title"))); })
+      .on("click", function(d) { showDetails([d]); })
     .append("svg:title")
       .text(function(d) { return d.length; })
       ;
 
-  var year = function(d) { return parseInt(d.begins.replace(/-.*$/, "")); };
-  var minYear = d3.min(allEvents, year);
-  var maxYear = d3.max(allEvents, year);
+  var minYear = d3.min(allEvents, useYear);
+  var maxYear = d3.max(allEvents, useYear);
 
   // prepare the year range scale
   var yearSlider = $("#year-range-slider").slider({
@@ -180,6 +190,7 @@ d3.json("data/conferences.json", function(data) {
     slide: function(event, ui) {
       $("#yearL").val(ui.values[0]);
       $("#yearU").val(ui.values[1]);
+      refresh();
     }
   });
   $("#yearL").val(minYear).change(function() { yearSlider.slider("values", [this.value, $("#yearU")[0].value]); });
@@ -187,6 +198,27 @@ d3.json("data/conferences.json", function(data) {
   
 });
 
+function showDetails(groups) {
+  // TODO sorting?
+  var eventsInInterest = groups.reduce(function(a,b){ return a.concat(b); })
+  d3.select("#list")
+    .selectAll("li")
+      .data(eventsInInterest, useTitle)
+    .enter().append("li")
+    .append("a")
+      .attr("href", generateURL)
+      .text(useTitle)
+      ;
+  d3.select("#list")
+    .selectAll("li")
+      .data(eventsInInterest, useTitle)
+    .exit().remove()
+    ;
+}
+
+function generateURL(conf) {
+  return conf.url;
+}
     </script>
   </body>
 </html>
