@@ -7,13 +7,13 @@ use JSON;
 
 my $header = <>;
 chomp $header;
-my @names = map { s/\s/_/g; lc; } split /\t+/, $header;
+my @names = map { s/\s/_/g; lc; } split /\t/, $header;
 
 my @records;
 while (my $line = <>) {
     chomp $line;
     my $r = {};
-    my @values = split /\t+/, $line;
+    my @values = split /\t/, $line;
     $r->{$_} = shift @values foreach @names;
     push @records, $r;
 }
