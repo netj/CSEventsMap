@@ -397,6 +397,15 @@ function updateMap() {
       .domain([1, maxCount])
       .range([bubbleScaleZoom, maxBubbleSize*bubbleScaleZoom])
   var bubbleRadius = function(d) { return bubbleScale(d.length); };
+  function radiusTransition() {
+    d3.select(this)
+      .transition().duration(duration)
+        .attr("r", bubbleRadius)
+        ;
+  }
+  function labelBubble(d) {
+    return d[0].where + " (" + d.length + " events)";
+  }
 
   eventsMap
     .selectAll(".event")
@@ -408,17 +417,17 @@ function updateMap() {
       .attr("cy", useFirstInGroup(useScaledLatitude))
       .attr("r", 0)
     .append("svg:title")
-      .text(function(d) { return d[0].where + " (" + d.length + " events)"; })
-    .transition().duration(duration)
-      .attr("r", bubbleRadius)
+      .text(labelBubble)
       ;
+
   eventsMap
     .selectAll(".event")
     .transition().duration(duration)
       .attr("cx", useFirstInGroup(useScaledLongitude))
       .attr("cy", useFirstInGroup(useScaledLatitude))
-      .attr("r", bubbleRadius)
+    .each("end", radiusTransition)
       ;
+
   eventsMap
     .selectAll(".event")
       .data(eventGroups, useFirstInGroup(useLocation))
@@ -426,7 +435,6 @@ function updateMap() {
     .transition().duration(duration)
       .attr("cx", useFirstInGroup(useScaledLongitude))
       .attr("cy", useFirstInGroup(useScaledLatitude))
-    .transition().duration(duration)
       .remove()
       ;
 }
