@@ -57,6 +57,7 @@
         }
         #yearly-view rect {
           fill: #a81;
+          cursor: pointer;
         }
         #yearly-view line {
           stroke: #444;
@@ -147,9 +148,12 @@
         }
 
         /* interactive styles */
-        #map svg.dragging {
-          cursor: url(http://www.worldtimzone.com/mozilla/testcase/css3cursors_files/grab.gif);
-          cursor: url(http://www.worldtimzone.com/mozilla/testcase/css3cursors_files/grabbing.gif);
+        /* For grabbing cursors, see: http://stackoverflow.com/questions/3632532/how-can-you-implement-a-grabbing-cursor-icon-in-chrome */
+        #map svg {
+          cursor: url(resource/openhand.cur), move;
+        }
+        body.dragging, body.dragging #map svg {
+          cursor: url(resource/closedhand.cur), move !important;
         }
         #yearly-view rect:hover {
           fill: #f44;
@@ -199,6 +203,19 @@ var countries = map.append("svg:g")
 var eventsMap = map.append("svg:g")
     .attr("id", "eventsMap");
 var maxBubbleSize = 10;
+var mapElement = $("#map svg")[0];
+xy.translate([mapElement.offsetWidth / 2, mapElement.offsetHeight / 1.618]);
+xy.scale(850);
+
+d3.json("d3/examples/data/world-countries.json", function(collection) {
+  countries
+    .selectAll("path")
+      .data(collection.features)
+    .enter().append("svg:path")
+      .attr("d", path)
+    .append("svg:title")
+      .text(function(d) { return d.properties.name; });
+});
 
 // yearly view
 var yearly = d3.select("#yearly-view").append("svg:svg")
@@ -243,16 +260,6 @@ yearlyStats.append("svg:text")
   .attr("transform", "translate(-"+(yearlyPaddingLeft-15)+","+(yearlyHeight/4-yearlyPaddingTop)+"), rotate(-90)")
   ;
 
-
-d3.json("d3/examples/data/world-countries.json", function(collection) {
-  countries
-    .selectAll("path")
-      .data(collection.features)
-    .enter().append("svg:path")
-      .attr("d", path)
-    .append("svg:title")
-      .text(function(d) { return d.properties.name; });
-});
 
 d3.id = function(d) { return d; };
 d3.proj = function(name) { return function(d) { return d[name]; }; }
@@ -332,10 +339,10 @@ function showYearly() {
 
 function showDetails(groups) {
   // TODO sorting?
-  var eventsInInterest = groups.reduce(function(a,b){ return a.concat(b); })
+  var eventsOfInterest = groups.reduce(function(a,b){ return a.concat(b); })
   d3.select("#list")
     .selectAll("li")
-      .data(eventsInInterest, useTitle)
+      .data(eventsOfInterest, useTitle)
     .enter().append("li")
     .append("a")
       .attr("href", generateURL)
@@ -343,7 +350,7 @@ function showDetails(groups) {
       ;
   d3.select("#list")
     .selectAll("li")
-      .data(eventsInInterest, useTitle)
+      .data(eventsOfInterest, useTitle)
     .exit().remove()
     ;
 }
@@ -416,6 +423,60 @@ d3.json("data/conferences.json", function(data) {
   showYearly();
 
 });
+
+
+// map navigation
+var mapZoomScale = 0.4;
+var noop = function() { return false; };
+var mapDragHandler = noop;
+var mapTranslation = [0, 0];
+var mapLastMouseEvent;
+function panMap() {
+  var dx = event.x - mapLastMouseEvent.x;
+  var dy = event.y - mapLastMouseEvent.y;
+  mapLastMouseEvent = event;
+  var t = xy.translate();
+  t[0] += dx;
+  t[1] += dy;
+  xy.translate(t);
+  // TODO safeguard translate
+  refresh();
+}
+function zoomMap() {
+  // See also: SVGPan.js of http://code.google.com/p/svgpan/
+  // figure out the delta from wheel
+  var delta;
+  if (event.wheelDelta)
+    delta = event.wheelDelta / 360; // Chrome/Safari
+  else
+    delta = event.detail / -9; // Mozilla
+  var r = Math.pow(1 + mapZoomScale, delta);
+  // adjust our scale and translation accordingly
+  var s = xy.scale();
+  // TODO safeguard scale
+  var t = xy.translate();
+  s *= r;
+  // we want the cursor to be the center of zoom
+  //  t' = cursor - r * (cursor - t)
+  t[0] = event.x - r * (event.x - t[0]);
+  t[1] = event.y - r * (event.y - t[1]);
+  xy.scale(s);
+  xy.translate(t);
+  refresh();
+}
+map.on("mousedown", function() {
+    mapLastMouseEvent = event;
+    mapDragHandler = panMap;
+    $(document.body).addClass("dragging");
+    document.onselectstart = noop;
+    });
+map.on("mousemove", function() { mapDragHandler(); });
+map.on("mouseup", function() {
+    mapDragHandler = noop;
+    $(document.body).removeClass("dragging");
+    document.onselectstart = null;
+    });
+map.on("mousewheel", zoomMap);
 
     </script>
   </body>
