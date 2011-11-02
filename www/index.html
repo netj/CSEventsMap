@@ -10,10 +10,10 @@
     <style type="text/css">
         @import url("d3/lib/jquery-ui/jquery-ui.css");
 
-        /* XXX debug */ .frame { border: 1px solid #f00; } svg { border: 1px solid red; }
+        /* XXX debug   .frame { border: 1px solid #f00; } svg { border: 1px solid red; } */
 
-        body, .ui-widget {
-            font: 14px 'Helvetica Neue';
+        body, svg text, .ui-widget {
+            font-family: 'Lucida Grande', 'Helvetica Neue';
         }
 
         body {
@@ -21,6 +21,7 @@
           color: #999;
           background-color: #000;
           margin: 0px; padding: 0px;
+          overflow: hidden;
         }
         a {
           color: #c93;
@@ -45,15 +46,34 @@
         }
 
         #yearly {
-          height: 120px;
+          height: 200px;
           bottom: 30px;
           left: 0px;
-          right: 260px;
+          right: 38.2%;
           padding: 10px;
         }
+        #yearly svg {
+          height: 190px;
+        }
+        #yearly-view rect {
+          fill: #a81;
+        }
+        #yearly-view line {
+          stroke: #444;
+          stroke-width: 1px;
+        }
+        #yearly-view text {
+          fill: #999;
+          font-size: 10px;
+        }
+        #year-range-slider * {
+          position: absolute;
+        }
         #year-range-slider {
+          bottom: 40px;
           height: 5px;
-          margin: 5px 10px;
+          margin-left: 55px;
+          margin-right: 10px;
           background: #222;
           border-color: #444;
         }
@@ -73,29 +93,30 @@
           border: 1px solid #999;
           text-align: center;
         }
-        #yearly svg {
-          height: 80px;
-          bottom: 0px;
-        }
-        #yearly-stats rect {
-          fill: #a81;
-        }
 
         #details {
-          top: 5px;
-          right: 10px;
-          width: 230px;
+          top: 0px;
+          right: 0px;
+          width: 38.2%;
           bottom: 35px;
-          padding: 10px;
+        }
+        #details .subtitle {
+          margin-top: 10px;
+          margin-left: 10px;
+        }
+        #details #list {
+          position: absolute;
+          top: 25px;
+          left: 10px;
+          right: 10px;
+          bottom: 0px;
           overflow: auto;
+          padding: 10px 10px 10px 25px;
+          margin: 5px 0px;
           background-color: #222;
           border: 1px solid #444;
           border-radius: 10px;
           box-shadow: 0px 2px 15px #444;
-        }
-        #details ul {
-          padding: 0px 10px 0px 20px;
-          margin: 5px 0px;
         }
 
         #map {
@@ -103,9 +124,8 @@
           display: block;
           top: 0px;
           left: 0px;
-          right: 260px;
-          bottom: 170px;
-          background-color: #000;
+          right: 38.2%;
+          bottom: 250px;
         }
         #map .subtitle {
           position: absolute;
@@ -116,23 +136,26 @@
         #map svg {
           width: 100%;
           height: 100%;
-          cursor: url(http://www.worldtimzone.com/mozilla/testcase/css3cursors_files/grab.gif);
         }
-        #map svg.dragging {
-          cursor: url(http://www.worldtimzone.com/mozilla/testcase/css3cursors_files/grabbing.gif);
-        }
-
         #countries path {
             fill: #222;
             stroke: #444;
         }
-
         #eventsMap .event {
             fill: rgba(255,192,32, 0.3);
             cursor: pointer;
         }
+
+        /* interactive styles */
+        #map svg.dragging {
+          cursor: url(http://www.worldtimzone.com/mozilla/testcase/css3cursors_files/grab.gif);
+          cursor: url(http://www.worldtimzone.com/mozilla/testcase/css3cursors_files/grabbing.gif);
+        }
+        #yearly-view rect:hover {
+          fill: #f44;
+        }
         #eventsMap .event:hover, #eventsMap .event:active {
-            stroke: #f44;
+          fill: #f44;
         }
     </style>
   </head>
@@ -153,8 +176,8 @@ Source:
 </div>
     
 <div id="yearly" class="frame">
-  <h2 class="subtitle">Yearly Stats <input type="text" size="4" id="yearL"> ~ <input type="text" size="4" id="yearU"></h2>
-  <div id="yearly-stats"></div>
+  <h2 class="subtitle">Yearly View <input type="text" size="4" id="yearL"> ~ <input type="text" size="4" id="yearU"></h2>
+  <div id="yearly-view"></div>
   <div id="year-range-slider"></div>
 </div>
 
@@ -166,21 +189,60 @@ Source:
 <script type="text/javascript">
 // Code derived from d3's Mercator Projection example
 
-// Our projection.
+// geographical view
 var xy = d3.geo.mercator(),
     path = d3.geo.path().projection(xy);
-
-var map = d3.select("#map")
-  .append("svg:svg")
+var map = d3.select("#map").append("svg:svg")
     .attr("id", "map-canvas");
-var countries = map
-  .append("svg:g")
+var countries = map.append("svg:g")
     .attr("id", "countries");
 var eventsMap = map.append("svg:g")
     .attr("id", "eventsMap");
-var yearlyStats = d3.select("#yearly-stats")
-  .append("svg:svg")
-    .attr("id", "yearly-stats-canvas");
+var maxBubbleSize = 10;
+
+// yearly view
+var yearly = d3.select("#yearly-view").append("svg:svg")
+    .attr("id", "yearly-view-canvas")
+    ;
+var yearlyPaddingTop = 10;
+var yearlyPaddingRight = 5;
+var yearlyPaddingBottom = 60;
+var yearlyPaddingLeft = 50;
+var yearlyCanvas = $("#yearly-view svg")[0];
+var yearlyWidth = yearlyCanvas.offsetWidth -yearlyPaddingLeft -yearlyPaddingRight;
+var yearlyHeight = yearlyCanvas.offsetHeight -yearlyPaddingBottom -yearlyPaddingTop;
+var yearlyStats = yearly.append("svg:g")
+    .attr("id", "yearly-stats-plot")
+    .attr("transform", "translate("+yearlyPaddingLeft+","+yearlyPaddingTop+")")
+    ;
+yearlyStats.append("svg:line")
+  .attr("class", "xAxis")
+  .attr("x1", 0)
+  .attr("x2", yearlyWidth)
+  .attr("y1", yearlyHeight)
+  .attr("y2", yearlyHeight)
+  ;
+yearlyStats.append("svg:text")
+  .text("Year")
+  .attr("text-anchor", "middle")
+  .attr("x", yearlyWidth/2)
+  .attr("y", yearlyHeight + 2*yearlyPaddingBottom/3 + $("#year-range-slider")[0].offsetHeight)
+  ;
+yearlyStats.append("svg:line")
+  .attr("class", "yAxis")
+  .attr("x1", 0)
+  .attr("x2", 0)
+  .attr("y1", 0)
+  .attr("y2", yearlyHeight)
+  ;
+yearlyStats.append("svg:text")
+  .text("Number of Events")
+  .attr("text-anchor", "end")
+  .attr("x", 0)
+  .attr("y", 0)
+  .attr("transform", "translate(-"+(yearlyPaddingLeft-15)+","+(yearlyHeight/4-yearlyPaddingTop)+"), rotate(-90)")
+  ;
+
 
 d3.json("d3/examples/data/world-countries.json", function(collection) {
   countries
@@ -215,35 +277,55 @@ var useTitle = function(d) { return d.title; }
 var allEvents;
 
 function showYearly() {
-  var canvas = $("#yearly-stats svg")[0];
-  var width = canvas.offsetWidth;
-  var height = canvas.offsetHeight;
-
   var eventGroupsByYear = indexBy(allEvents, useYear);
   var yearGroups = d3.values(eventGroupsByYear);
   var minYear = d3.min(yearGroups, useFirstInGroup(useYear));
   var maxYear = d3.max(yearGroups, useFirstInGroup(useYear));
+  var nrYears = (maxYear - minYear + 1);
+  var maxCount = d3.max(yearGroups, useLength);
+  var barWidthToSpacing = 0.9;
+  var barWidth = (yearlyWidth / nrYears) * barWidthToSpacing;
   var x = d3.scale.linear()
       .domain([minYear, maxYear])
-      .range([0, width])
+      .range([0, yearlyWidth-barWidth])
       ;
-  var maxCount = d3.max(yearGroups, useLength);
   var y = d3.scale.linear()
       .domain([0, maxCount])
-      .range([0, height])
+      .range([0, yearlyHeight])
       ;
-
-  var barWidthToSpacing = 0.8;
-  var barWidth = (width / (maxYear - minYear + 1)) * barWidthToSpacing;
 
   yearlyStats
     .selectAll("rect")
-      .data(yearGroups, function(d) { return useYear(d[0]); })
+      .data(yearGroups, useFirstInGroup(useYear))
     .enter().append("svg:rect")
       .attr("x", function(d) { return x(useYear(d[0])); })
-      .attr("y", function(d) { return height - y(d.length); })
+      .attr("y", function(d) { return yearlyHeight - y(d.length); })
       .attr("height", function(d) { return y(d.length); })
       .attr("width", barWidth)
+      ;
+
+  var xTick = Math.floor(nrYears / 9);
+  yearlyStats
+    .selectAll("text.xAxis")
+      .data(x.ticks(10))
+    .enter().append("svg:text")
+      .text(d3.id)
+      .attr("x", x)
+      .attr("y", yearlyHeight)
+      .attr("text-anchor", "middle")
+      .attr("dx", barWidth/2)
+      .attr("dy", 14)
+      .attr("class", "xAxis")
+      ;
+  yearlyStats
+    .selectAll("text.yAxis")
+      .data(y.ticks(4))
+    .enter().append("svg:text")
+      .text(d3.id)
+      .attr("x", -5)
+      .attr("y", function(d) { return yearlyHeight - y(d); })
+      .attr("text-anchor", "end")
+      .attr("class", "yAxis")
       ;
 }
 
@@ -287,7 +369,7 @@ d3.json("data/conferences.json", function(data) {
   var maxCount = d3.max(events, function(d) { return d.length; });
   var bubbleScale = d3.scale.linear()
       .domain([1, maxCount])
-      .range([1, 10])
+      .range([1, maxBubbleSize])
 
   eventsMap
     .selectAll(".event")
