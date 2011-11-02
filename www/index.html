@@ -10,7 +10,7 @@
     <style type="text/css">
         @import url("d3/lib/jquery-ui/jquery-ui.css");
 
-        /* XXX debug   .frame { border: 1px solid #f00; } svg { border: 1px solid red; } */
+        /* XXX debug *  .frame { border: 1px solid #f00; } svg { border: 1px solid red; } /**/
 
         body, svg text, .ui-widget {
             font-family: 'Lucida Grande', 'Helvetica Neue';
@@ -49,8 +49,17 @@
           height: 200px;
           bottom: 30px;
           left: 0px;
-          right: 38.2%;
+          right: 36%;
           padding: 10px;
+          padding-right: 2.2%;
+          /* Gradient from: http://www.colorzilla.com/gradient-editor/#000000+0,000000+100&0+0,1+10;Custom */
+          background: -moz-linear-gradient(top,  rgba(0,0,0,0) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 100%); /* FF3.6+ */
+          background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(10%,rgba(0,0,0,1)), color-stop(100%,rgba(0,0,0,1))); /* Chrome,Safari4+ */
+          background: -webkit-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 10%,rgba(0,0,0,1) 100%); /* Chrome10+,Safari5.1+ */
+          background: -o-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 10%,rgba(0,0,0,1) 100%); /* Opera 11.10+ */
+          background: -ms-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 10%,rgba(0,0,0,1) 100%); /* IE10+ */
+          background: linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 10%,rgba(0,0,0,1) 100%); /* W3C */
+          filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
         }
         #yearly svg {
           height: 190px;
@@ -98,8 +107,16 @@
         #details {
           top: 0px;
           right: 0px;
-          width: 38.2%;
+          width: 38.2%; /* golden ratio */
           bottom: 35px;
+          /* Gradient background from: http://www.colorzilla.com/gradient-editor/#000000+0,000000+100&0+0,1+10;Custom */
+          background: -moz-linear-gradient(left,  rgba(0,0,0,0) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 100%); /* FF3.6+ */
+          background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(0,0,0,0)), color-stop(10%,rgba(0,0,0,1)), color-stop(100%,rgba(0,0,0,1))); /* Chrome,Safari4+ */
+          background: -webkit-linear-gradient(left,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 10%,rgba(0,0,0,1) 100%); /* Chrome10+,Safari5.1+ */
+          background: -o-linear-gradient(left,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 10%,rgba(0,0,0,1) 100%); /* Opera 11.10+ */
+          background: -ms-linear-gradient(left,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 10%,rgba(0,0,0,1) 100%); /* IE10+ */
+          background: linear-gradient(left,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 10%,rgba(0,0,0,1) 100%); /* W3C */
+          filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=1 ); /* IE6-9 */
         }
         #details .subtitle {
           margin-top: 10px;
@@ -117,7 +134,7 @@
           background-color: #222;
           border: 1px solid #444;
           border-radius: 10px;
-          box-shadow: 0px 2px 15px #444;
+          box-shadow: 0px 2px 15px #000;
         }
 
         #map {
@@ -125,8 +142,8 @@
           display: block;
           top: 0px;
           left: 0px;
-          right: 38.2%;
-          bottom: 250px;
+          right: 32%;
+          bottom: 200px;
         }
         #map .subtitle {
           position: absolute;
@@ -205,7 +222,7 @@ var eventsMap = map.append("svg:g")
 var maxBubbleSize = 10;
 var mapElement = $("#map svg")[0];
 xy.translate([mapElement.offsetWidth / 2, mapElement.offsetHeight / 1.618]);
-xy.scale(850);
+xy.scale(mapElement.offsetWidth);
 
 d3.json("d3/examples/data/world-countries.json", function(collection) {
   countries
@@ -471,7 +488,7 @@ map.on("mousedown", function() {
     document.onselectstart = noop;
     });
 map.on("mousemove", function() { mapDragHandler(); });
-map.on("mouseup", function() {
+$(window).mouseup(function() {
     mapDragHandler = noop;
     $(document.body).removeClass("dragging");
     document.onselectstart = null;
