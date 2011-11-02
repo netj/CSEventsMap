@@ -554,10 +554,10 @@ function showDetails(groups) {
       .data(groups, useFirstInGroup(useWhere))
     .enter().append("li")
       .on("click", expandDetails)
-      .each(expandDetails)
       .text(function(d) {
           return d[0].where +" ("+ d.length +" events)";
           })
+//      .each(expandDetails)
       ;
   list
     .selectAll("li")
@@ -565,7 +565,9 @@ function showDetails(groups) {
     .exit().remove()
     ;
 }
-function expandDetails(g, i, j) {
+function expandDetails(g, i) {
+  if (d3.select(this).select("ul").node())
+    return;
   try {
     d3.select(this).append("ul")
       .selectAll("li")
@@ -576,7 +578,21 @@ function expandDetails(g, i, j) {
         .text(useTitle)
         ;
   } catch (e) {
-    console.log(i, j, this, g, e.message);
+    console.log(i, this, g, e.message);
+    var that = this;
+    for (var i=0; i<g.length; i++) {
+      (function(conf) {
+       $("ul", that).append(
+         $("<li>").append(
+           $("<a>")
+           .attr("href", generateURL(conf))
+           .text(useTitle(conf))
+           )
+         )
+       ;
+       return conf;
+       })(g[i]);
+    }
   }
 }
 function generateURL(conf) {
