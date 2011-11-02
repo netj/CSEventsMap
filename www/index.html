@@ -674,11 +674,18 @@ $(window).load(function() {
       yearSlider.slider("option", "values", [minYear, maxYear]);
       refreshFully();
       // hide the loading spinner
-      $("#loading").addClass("done");
-      setTimeout(function(){ $("#loading").remove(); }, 2000);
+      setTimeout(function(){
+        $("#loading").addClass("done");
+        setTimeout(function(){
+          $("#loading").remove();
+        }, 5000);
+      }, duration + 500);
     });
   });
 
     </script>
   </body>
 </html>
+<!--
+vim:sw=2:sts=2
+-->
