@@ -203,6 +203,7 @@
           -moz-transition: all .5s ease-in-out;
           -o-transition: all .5s ease-in-out;
           transition: all .5s ease-in-out;
+          z-index: -2;
         }
         #loading .subtitle {
           font-size: 16px;
@@ -233,7 +234,7 @@ Created by <a href="http://github.com/netj">Jaeho Shin</a>.
 </div>
 
 <div id="details" class="frame">
-  <h2 class="subtitle">Events Detail</h2>
+  <h2 class="subtitle">Events Detail (<span id="summary"></span>)</h2>
   <ul id="list"></ul>
 </div>
 
@@ -245,23 +246,94 @@ Created by <a href="http://github.com/netj">Jaeho Shin</a>.
 <script type="text/javascript">
 // Code derived from d3's Mercator Projection example
 
+// timing configuration
 var duration = 1000;
 var mapZoomingRefreshDelay = 25;
+// display configuration
+var maxBubbleSize = 10;
+var barWidthToSpacing = 0.9;
+var yearlyPaddingTop = 10;
+var yearlyPaddingRight = 5;
+var yearlyPaddingBottom = 60;
+var yearlyPaddingLeft = 50;
 
+
+
+//// some vocabularies
+d3.id = function(d) { return d; };
+d3.proj = function(name) { return function(d) { return d[name]; }; }
+
+function indexBy(records, keyfn) {
+    var index = {};
+    for (var i in records) {
+        var r = records[i];
+        var k = keyfn(r);
+        if (k == null)
+          continue;
+        if (index[k] == null)
+            index[k] = [];
+        index[k].push(r);
+    }
+    return index;
+}
+
+var useFirstInGroup = function(use) { return function(d) { return use(d[0]); }; };
+var useLength  = function(d) { return d.length; };
+var useYear = function(d) { return parseInt(d.begins.replace(/-.*$/, "")); };
+var useTitle = function(d) { return d.title; }
+var useLocation = function(d) { return d.latitude+","+d.longitude; };
+var useWhere = function(d) { return d.where; };
+var useScaledLongitude = function(d) { return xy([d.longitude, d.latitude])[0]; }
+var useScaledLatitude  = function(d) { return xy([d.longitude, d.latitude])[1]; }
+
+
+
+//// data model
+var filteredEvents;
+var filteredEventsByLocation;
+var allEvents;
+
+// time/space knobs
+var xy = d3.geo.mercator();
+var mapZoomScaleValue = 1.0;
+
+var minYear = 1960;
+var maxYear = new Date().getYear();
+
+function adaptFiltering() {
+  // TODO adapt map pan/zoom changes?
+
+  // years
+  minYear = d3.min(filteredEvents, useYear);
+  maxYear = d3.max(filteredEvents, useYear);
+
+  // TODO consider removing change handler from slider
+  yearSlider.slider("option", "min", minYear);
+  yearSlider.slider("option", "max", maxYear);
+  yearSlider.slider("option", "values", [minYear, maxYear]);
+
+  return this;
+}
+
+function resetFilters() {
+  filteredEvents = allEvents;
+  adaptFiltering();
+  refreshFully();
+}
+
+
+//// views
 // geographical view
-var xy = d3.geo.mercator(),
-    path = d3.geo.path().projection(xy);
+var path = d3.geo.path().projection(xy);
 var map = d3.select("#map").append("svg:svg")
     .attr("id", "map-canvas");
 var countries = map.append("svg:g")
     .attr("id", "countries");
 var eventsMap = map.append("svg:g")
     .attr("id", "eventsMap");
-var maxBubbleSize = 10;
 var mapElement = $("#map svg")[0];
 xy.translate([mapElement.offsetWidth / 2, mapElement.offsetHeight / 1.618]);
 xy.scale(mapElement.offsetWidth);
-var mapZoomScaleValue = 1.0;
 
 function initMap() {
   d3.json("d3/examples/data/world-countries.json", function(collection) {
@@ -280,10 +352,6 @@ function initMap() {
 var yearly = d3.select("#yearly-view").append("svg:svg")
     .attr("id", "yearly-view-canvas")
     ;
-var yearlyPaddingTop = 10;
-var yearlyPaddingRight = 5;
-var yearlyPaddingBottom = 60;
-var yearlyPaddingLeft = 50;
 var yearlyCanvas = $("#yearly-view svg")[0];
 var yearlyWidth = yearlyCanvas.offsetWidth -yearlyPaddingLeft -yearlyPaddingRight;
 var yearlyHeight = yearlyCanvas.offsetHeight -yearlyPaddingBottom -yearlyPaddingTop;
@@ -321,8 +389,6 @@ function initYearly() {
     .attr("transform", "translate(-"+(yearlyPaddingLeft-15)+","+(yearlyHeight/4-yearlyPaddingTop)+"), rotate(-90)")
     ;
   // the year range slider
-  var minYear = 1960;
-  var maxYear = new Date().getYear();
   function yearSliderUpdate(event, ui) {
     $("#yearL").val(ui.values[0]);
     $("#yearU").val(ui.values[1]);
@@ -352,36 +418,11 @@ function initYearly() {
 }
 
 
-d3.id = function(d) { return d; };
-d3.proj = function(name) { return function(d) { return d[name]; }; }
 
-function indexBy(records, keyfn) {
-    var index = {};
-    for (var i in records) {
-        var r = records[i];
-        var k = keyfn(r);
-        if (k == null)
-          continue;
-        if (index[k] == null)
-            index[k] = [];
-        index[k].push(r);
-    }
-    return index;
-}
-
-var useFirstInGroup = function(use) { return function(d) { return use(d[0]); }; };
-var useLength  = function(d) { return d.length; };
-var useYear = function(d) { return parseInt(d.begins.replace(/-.*$/, "")); };
-var useTitle = function(d) { return d.title; }
-var useLocation = function(d) { return d.latitude+","+d.longitude; };
-
-var useScaledLongitude = function(d) { return xy([d.longitude, d.latitude])[0]; }
-var useScaledLatitude  = function(d) { return xy([d.longitude, d.latitude])[1]; }
-
-var allEvents;
-
+//// controllers and more
+// view updaters
 function updateMap() {
-  var allEventsByLocation = indexBy(allEvents, function(d) {
+  filteredEventsByLocation = indexBy(filteredEvents, function(d) {
       var coords = xy([d.longitude,d.latitude]);
       if (coords[0] == NaN || coords[0] < 0 || mapElement.offsetWidth < coords[0]
         || coords[1] == NaN || coords[1] < 0 || mapElement.offsetHeight < coords[1])
@@ -389,9 +430,10 @@ function updateMap() {
       else
         return coords.join(",");
       });
+  // TODO adaptFiltering
 
-  var eventGroups = d3.values(allEventsByLocation);
-  var maxCount = d3.max(eventGroups, useLength);
+  var eventGroups = d3.values(filteredEventsByLocation);
+  var maxCount = d3.max(eventGroups, useLength); // TODO global max  vs.  local max
   var bubbleScaleZoom = Math.sqrt(mapZoomScaleValue)
   var bubbleScale = d3.scale.sqrt()
       .domain([1, maxCount])
@@ -440,13 +482,11 @@ function updateMap() {
 }
 
 function updateYearly() {
-  var eventGroupsByYear = indexBy(allEvents, useYear);
+  var eventGroupsByYear = indexBy(filteredEvents, useYear);
+  // TODO feedback to adaptFiltering()
   var yearGroups = d3.values(eventGroupsByYear);
-  var minYear = d3.min(yearGroups, useFirstInGroup(useYear));
-  var maxYear = d3.max(yearGroups, useFirstInGroup(useYear));
   var nrYears = (maxYear - minYear + 1);
-  var maxCount = d3.max(yearGroups, useLength);
-  var barWidthToSpacing = 0.9;
+  var maxCount = d3.max(yearGroups, useLength); // TODO global max  vs.  local max
   var barWidth = (yearlyWidth / nrYears) * barWidthToSpacing;
   var x = d3.scale.linear()
       .domain([minYear, maxYear])
@@ -497,28 +537,63 @@ function updateYearly() {
 }
 
 
+function updateDetails() {
+  showDetails(d3.values(filteredEventsByLocation));
+}
 function showDetails1(group) {
   showDetails([group]);
 }
 function showDetails(groups) {
   // TODO sorting?
-  var eventsOfInterest = groups.reduce(function(a,b){ return a.concat(b); })
-  d3.select("#list")
+  // var eventsOfInterest = groups.reduce(function(a,b){ return a.concat(b); });
+  var summary = d3.select("#summary")
+    .text(groups.length + " places");
+  var list = d3.select("#list");
+  list
     .selectAll("li")
-      .data(eventsOfInterest, useTitle)
+      .data(groups, useFirstInGroup(useWhere))
     .enter().append("li")
-    .append("a")
-      .attr("href", generateURL)
-      .text(useTitle)
+      .on("click", expandDetails)
+      .each(expandDetails)
+      .text(function(d) {
+          return d[0].where +" ("+ d.length +" events)";
+          })
       ;
-  d3.select("#list")
+  list
     .selectAll("li")
-      .data(eventsOfInterest, useTitle)
+      .data(groups, useFirstInGroup(useWhere))
     .exit().remove()
     ;
 }
+function expandDetails(g, i, j) {
+  try {
+    d3.select(this).append("ul")
+      .selectAll("li")
+        .data(g)
+      .entry().append("li")
+        .append("a")
+        .attr("href", generateURL)
+        .text(useTitle)
+        ;
+  } catch (e) {
+    console.log(i, j, this, g, e.message);
+  }
+}
 function generateURL(conf) {
   return conf.url;
+}
+
+
+function refresh() {
+  countries.selectAll("path").attr("d", path);
+  updateMap();
+}
+function refreshFully() {
+  console.log("refreshFully");
+  refresh();
+  updateYearly();
+  updateDetails();
+  syncURL();
 }
 
 
@@ -576,16 +651,7 @@ $(window).bind("hashchange", function() {
   });
 
 
-function refresh() {
-  countries.selectAll("path").attr("d", path);
-  updateMap();
-}
-function refreshFully() {
-  refresh();
-  updateYearly();
-  syncURL();
-}
-
+// interactions
 function initMapInteractions() {
   // map panning
   var noop = function() { return false; };
@@ -604,9 +670,11 @@ function initMapInteractions() {
     refresh();
   }
   map.on("mousedown", function() {
-      mapLastMouseEvent = event;
-      mapDragHandler = panMap;
-      document.onselectstart = noop;
+      if (event.button == 0) {
+        mapLastMouseEvent = event;
+        mapDragHandler = panMap;
+        document.onselectstart = noop;
+      }
       });
   map.on("mousemove", function() {
       mapDragHandler();
@@ -614,10 +682,13 @@ function initMapInteractions() {
   $(window).mouseup(function() {
       mapLastMouseEvent = null;
       mapDragHandler = noop;
-      $(document.body).removeClass("panning");
       document.onselectstart = null;
-      refreshFully();
-      });
+      var body = $(document.body);
+      if (body.hasClass("panning")) {
+        body.removeClass("panning");
+        refreshFully();
+      }
+    });
 
   // map zooming
   var mapZoomScale = 0.4;
@@ -658,6 +729,7 @@ function initMapInteractions() {
 }
 
 
+// entry point
 $(window).load(function() {
     // initialize everything
     decodeURLHash(location.hash);
@@ -667,12 +739,7 @@ $(window).load(function() {
     d3.json("data/conferences.json", function(data) {
       // load events data
       allEvents = data;
-      minYear = d3.min(allEvents, useYear);
-      maxYear = d3.max(allEvents, useYear);
-      yearSlider.slider("option", "min", minYear);
-      yearSlider.slider("option", "max", maxYear);
-      yearSlider.slider("option", "values", [minYear, maxYear]);
-      refreshFully();
+      resetFilters();
       // hide the loading spinner
       setTimeout(function(){
         $("#loading").addClass("done");
