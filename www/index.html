@@ -215,6 +215,7 @@ Created by <a href="http://github.com/netj">Jaeho Shin</a>.
 // Code derived from d3's Mercator Projection example
 
 var duration = 1000;
+var mapZoomingRefreshDelay = 25;
 
 // geographical view
 var xy = d3.geo.mercator(),
@@ -229,16 +230,20 @@ var maxBubbleSize = 10;
 var mapElement = $("#map svg")[0];
 xy.translate([mapElement.offsetWidth / 2, mapElement.offsetHeight / 1.618]);
 xy.scale(mapElement.offsetWidth);
+var mapZoomScaleValue = 1.0;
 
-d3.json("d3/examples/data/world-countries.json", function(collection) {
-  countries
-    .selectAll("path")
+function initMap() {
+  d3.json("d3/examples/data/world-countries.json", function(collection) {
+      countries
+      .selectAll("path")
       .data(collection.features)
-    .enter().append("svg:path")
+      .enter().append("svg:path")
       .attr("d", path)
-    .append("svg:title")
+      .append("svg:title")
       .text(function(d) { return d.properties.name; });
-});
+    });
+}
+
 
 // yearly view
 var yearly = d3.select("#yearly-view").append("svg:svg")
@@ -255,62 +260,65 @@ var yearlyStats = yearly.append("svg:g")
     .attr("id", "yearly-stats-plot")
     .attr("transform", "translate("+yearlyPaddingLeft+","+yearlyPaddingTop+")")
     ;
-yearlyStats.append("svg:line")
-  .attr("class", "xAxis")
-  .attr("x1", 0)
-  .attr("x2", yearlyWidth)
-  .attr("y1", yearlyHeight)
-  .attr("y2", yearlyHeight)
-  ;
-yearlyStats.append("svg:text")
-  .text("Year")
-  .attr("text-anchor", "middle")
-  .attr("x", yearlyWidth/2)
-  .attr("y", yearlyHeight + 2*yearlyPaddingBottom/3 + $("#year-range-slider")[0].offsetHeight)
-  ;
-yearlyStats.append("svg:line")
-  .attr("class", "yAxis")
-  .attr("x1", 0)
-  .attr("x2", 0)
-  .attr("y1", 0)
-  .attr("y2", yearlyHeight)
-  ;
-yearlyStats.append("svg:text")
-  .text("Number of Events")
-  .attr("text-anchor", "end")
-  .attr("x", 0)
-  .attr("y", 0)
-  .attr("transform", "translate(-"+(yearlyPaddingLeft-15)+","+(yearlyHeight/4-yearlyPaddingTop)+"), rotate(-90)")
-  ;
-// the year range slider
-var minYear = 1960;
-var maxYear = new Date().getYear();
-function yearSliderUpdate(event, ui) {
-  $("#yearL").val(ui.values[0]);
-  $("#yearU").val(ui.values[1]);
-  refresh();
+var yearSlider;
+function initYearly() {
+  yearlyStats.append("svg:line")
+    .attr("class", "xAxis")
+    .attr("x1", 0)
+    .attr("x2", yearlyWidth)
+    .attr("y1", yearlyHeight)
+    .attr("y2", yearlyHeight)
+    ;
+  yearlyStats.append("svg:text")
+    .text("Year")
+    .attr("text-anchor", "middle")
+    .attr("x", yearlyWidth/2)
+    .attr("y", yearlyHeight + 2*yearlyPaddingBottom/3 + $("#year-range-slider")[0].offsetHeight)
+    ;
+  yearlyStats.append("svg:line")
+    .attr("class", "yAxis")
+    .attr("x1", 0)
+    .attr("x2", 0)
+    .attr("y1", 0)
+    .attr("y2", yearlyHeight)
+    ;
+  yearlyStats.append("svg:text")
+    .text("Number of Events")
+    .attr("text-anchor", "end")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("transform", "translate(-"+(yearlyPaddingLeft-15)+","+(yearlyHeight/4-yearlyPaddingTop)+"), rotate(-90)")
+    ;
+  // the year range slider
+  var minYear = 1960;
+  var maxYear = new Date().getYear();
+  function yearSliderUpdate(event, ui) {
+    $("#yearL").val(ui.values[0]);
+    $("#yearU").val(ui.values[1]);
+    refreshFully();
+  }
+  yearSlider = $("#year-range-slider").slider({
+      range: true,
+      min: minYear,
+      max: maxYear,
+      step: 1,
+      values: [minYear, maxYear],
+      change: yearSliderUpdate,
+      slide: yearSliderUpdate
+  });
+  // validate entered values
+  var yearInputValidate = function(i) {
+    var y = parseInt(i.value);
+    if (y > yearSlider.max)
+      y = yearSlider.max;
+    else if (y < yearSlider.min)
+      y = yearSlider.min;
+    i.value = y;
+    return y;
+  };
+  $("#yearL").change(function() { yearSlider.slider("values", 0, yearInputValidate(this)); });
+  $("#yearU").change(function() { yearSlider.slider("values", 1, yearInputValidate(this)); });;
 }
-var yearSlider = $("#year-range-slider").slider({
-    range: true,
-    min: minYear,
-    max: maxYear,
-    step: 1,
-    values: [minYear, maxYear],
-    change: yearSliderUpdate,
-    slide: yearSliderUpdate
-});
-// validate entered values
-var yearInputValidate = function(i) {
-  var y = parseInt(i.value);
-  if (y > yearSlider.max)
-    y = yearSlider.max;
-  else if (y < yearSlider.min)
-    y = yearSlider.min;
-  i.value = y;
-  return y;
-};
-$("#yearL").change(function() { yearSlider.slider("values", 0, yearInputValidate(this)); });
-$("#yearU").change(function() { yearSlider.slider("values", 1, yearInputValidate(this)); });;
 
 
 d3.id = function(d) { return d; };
@@ -475,96 +483,160 @@ function generateURL(conf) {
 }
 
 
+// URL sync
+function encodeURLHash() {
+  var param = {};
+  var t = xy.translate();
+  var coords = xy.invert([mapElement.offsetWidth/2, mapElement.offsetHeight/2]);
+  param.lng = Math.round(1000 * coords[0]) / 1000;
+  param.lat = Math.round(1000 * coords[1]) / 1000;
+  param.z = Math.round(10 * mapZoomScaleValue) / 10;
+  // TODO years = ...;
+  var hash = [];
+  for (var i in param)
+    hash.push(i + "=" + param[i]);
+  return "#" + hash.join("&");
+}
+function decodeURLHash(hash) {
+  var kvs = hash.substring(1).split("&");
+  var param = {};
+  for (var i in kvs) {
+    var kv = kvs[i].split("=", 2);
+    param[kv[0]] = kv[1];
+  }
+  param.lat = parseFloat(param.lat);
+  param.lng = parseFloat(param.lng);
+  param.z = parseFloat(param.z);
+  if (param.z) {
+    mapZoomScaleValue = param.z;
+    xy.scale(mapElement.offsetWidth * mapZoomScaleValue);
+  }
+  if (param.lng && param.lat) {
+    var o = xy([ 0, 0 ]);
+    var c = xy([ param.lng, param.lat ]);
+    xy.translate( [
+        o[0] - c[0] + mapElement.offsetWidth /2,
+        o[1] - c[1] + mapElement.offsetHeight/2
+        ] );
+  }
+  // TODO years
+}
+var urlSyncInProgress = false;
+function syncURL() {
+  urlSyncInProgress = true;
+  location.hash = encodeURLHash();
+  // TODO history.pushState(null, document.title, encodeURLHash());
+}
+$(window).bind("hashchange", function() {
+    if (urlSyncInProgress) {
+      urlSyncInProgress = false;
+      return false;
+    }
+    decodeURLHash(location.hash);
+    refreshFully();
+  });
+
+
 function refresh() {
   countries.selectAll("path").attr("d", path);
   updateMap();
-  updateYearly();
 }
-
-
-// load events data
-d3.json("data/conferences.json", function(data) {
-  allEvents = data;
-  minYear = d3.min(allEvents, useYear);
-  maxYear = d3.max(allEvents, useYear);
-  yearSlider.slider("option", "min", minYear);
-  yearSlider.slider("option", "max", maxYear);
-  yearSlider.slider("option", "values", [minYear, maxYear]);
-  updateMap();
-  updateYearly();
-});
-
-
-// map panning
-var noop = function() { return false; };
-var mapDragHandler = noop;
-var mapLastMouseEvent = null;
-function panMap() {
-  $(document.body).addClass("panning");
-  var dx = event.x - mapLastMouseEvent.x;
-  var dy = event.y - mapLastMouseEvent.y;
-  mapLastMouseEvent = event;
-  var t = xy.translate();
-  t[0] += dx;
-  t[1] += dy;
-  xy.translate(t);
-  // TODO safeguard translate
+function refreshFully() {
   refresh();
+  updateYearly();
+  syncURL();
 }
-map.on("mousedown", function() {
+
+function initMapInteractions() {
+  // map panning
+  var noop = function() { return false; };
+  var mapDragHandler = noop;
+  var mapLastMouseEvent = null;
+  function panMap() {
+    $(document.body).addClass("panning");
+    var dx = event.x - mapLastMouseEvent.x;
+    var dy = event.y - mapLastMouseEvent.y;
     mapLastMouseEvent = event;
-    mapDragHandler = panMap;
-    document.onselectstart = noop;
-    });
-map.on("mousemove", function() {
-    mapDragHandler();
-    });
-$(window).mouseup(function() {
-    mapLastMouseEvent = null;
-    mapDragHandler = noop;
-    $(document.body).removeClass("panning");
-    document.onselectstart = null;
+    var t = xy.translate();
+    t[0] += dx;
+    t[1] += dy;
+    xy.translate(t);
+    // TODO safeguard translate
     refresh();
-    });
+  }
+  map.on("mousedown", function() {
+      mapLastMouseEvent = event;
+      mapDragHandler = panMap;
+      document.onselectstart = noop;
+      });
+  map.on("mousemove", function() {
+      mapDragHandler();
+      });
+  $(window).mouseup(function() {
+      mapLastMouseEvent = null;
+      mapDragHandler = noop;
+      $(document.body).removeClass("panning");
+      document.onselectstart = null;
+      refreshFully();
+      });
 
-// map zooming
-var mapZoomScale = 0.4;
-var mapZoomScaleValue = 1.0;
-var mapZoomingTimeout = null;
-var mapZoomingRefreshDelay = 50;
-function zoomMap() {
-  if (!mapZoomingTimeout)
-    $(document.body).addClass("zooming");
-  // See also: SVGPan.js of http://code.google.com/p/svgpan/
-  // figure out the delta from wheel
-  var delta;
-  if (event.wheelDelta)
-    delta = event.wheelDelta / 360; // Chrome/Safari
-  else
-    delta = event.detail / -9; // Mozilla
-  var r = Math.pow(1 + mapZoomScale, delta);
-  // adjust our scale and translation accordingly
-  var s = xy.scale();
-  var t = xy.translate();
-  // TODO safeguard scale
-  s *= r;
-  xy.scale(s);
-  mapZoomScaleValue *= r;
-  // we want the cursor to be the center of zoom
-  //  t' = cursor - r * (cursor - t)
-  t[0] = event.x - r * (event.x - t[0]);
-  t[1] = event.y - r * (event.y - t[1]);
-  xy.translate(t);
-  refresh();
-  clearTimeout(mapZoomingTimeout);
-  mapZoomingTimeout = setTimeout(zoomMapDone, mapZoomingRefreshDelay);
+  // map zooming
+  var mapZoomScale = 0.4;
+  var mapZoomingTimeout = null;
+  function zoomMap() {
+    if (!mapZoomingTimeout)
+      $(document.body).addClass("zooming");
+    // See also: SVGPan.js of http://code.google.com/p/svgpan/
+    // figure out the delta from wheel
+    var delta;
+    if (event.wheelDelta)
+      delta = event.wheelDelta / 360; // Chrome/Safari
+    else
+      delta = event.detail / -9; // Mozilla
+    var r = Math.pow(1 + mapZoomScale, delta);
+    // adjust our scale and translation accordingly
+    var s = xy.scale();
+    var t = xy.translate();
+    // TODO safeguard scale
+    s *= r;
+    xy.scale(s);
+    mapZoomScaleValue *= r;
+    // we want the cursor to be the center of zoom
+    //  t' = cursor - r * (cursor - t)
+    t[0] = event.x - r * (event.x - t[0]);
+    t[1] = event.y - r * (event.y - t[1]);
+    xy.translate(t);
+    refresh();
+    clearTimeout(mapZoomingTimeout);
+    mapZoomingTimeout = setTimeout(zoomMapDone, mapZoomingRefreshDelay);
+  }
+  function zoomMapDone() {
+    $(document.body).removeClass("zooming");
+    mapZoomingTimeout = null;
+    refreshFully();
+  }
+  map.on("mousewheel", zoomMap);
 }
-function zoomMapDone() {
-  $(document.body).removeClass("zooming");
-  mapZoomingTimeout = null;
-  refresh();
-}
-map.on("mousewheel", zoomMap);
+
+
+$(window).load(function() {
+    // initialize everything
+    decodeURLHash(location.hash);
+    initMap();
+    initMapInteractions();
+    initYearly();
+    // TODO show loading spinner
+    d3.json("data/conferences.json", function(data) {
+      // load events data
+      allEvents = data;
+      minYear = d3.min(allEvents, useYear);
+      maxYear = d3.max(allEvents, useYear);
+      yearSlider.slider("option", "min", minYear);
+      yearSlider.slider("option", "max", maxYear);
+      yearSlider.slider("option", "values", [minYear, maxYear]);
+      refreshFully();
+    });
+  });
 
     </script>
   </body>
