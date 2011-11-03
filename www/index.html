@@ -193,7 +193,7 @@
           padding: 4%;
           text-align: center;
           vertical-align: middle;
-          color: #c30;
+          color: #222;
           background-color: #fff;
           border-radius: 10px;
           box-shadow: 0px 2px 30px #888;
@@ -282,7 +282,11 @@ function indexBy(records, keyfn) {
 
 var useFirstInGroup = function(use) { return function(d) { return use(d[0]); }; };
 var useLength  = function(d) { return d.length; };
-var useYear = function(d) { return parseInt(d.begins.replace(/-.*$/, "")); };
+var useYear = function(d) {
+  if (!d.year)
+    d.year = parseInt(d.begins.replace(/-.*$/, ""));
+  return d.year;
+};
 var useTitle = function(d) { return d.title; }
 var useLocation = function(d) { return d.latitude+","+d.longitude; };
 var useWhere = function(d) { return d.where; };
@@ -297,35 +301,40 @@ function descendingOrderInLength(a,b) { return b.length - a.length; }
 
 //// data model
 var filteredEvents;
-var filteredEventsByLocation;
 var filteredEventsLocationGroups;
 var allEvents;
 
 // time/space knobs
 var xy = d3.geo.mercator();
+var yearLB, yearUB;
 var mapZoomScaleValue = 1.0;
 
 var minYear = 1960;
-var maxYear = new Date().getYear();
+var maxYear = new Date().getYear()+1900 + 1;
+var nrYears = maxYear - minYear + 1;
+var filteredMinYear = minYear;
+var filteredMaxYear = maxYear;
 
 function adaptFiltering() {
-  // TODO adapt map pan/zoom changes?
+  // limit events into given year range
+  var eventsLimitedByYear = allEvents.filter(function(d) {
+      var y = useYear(d);
+      return yearLB <= y && y <= yearUB;
+    });
 
-  // years
-  minYear = d3.min(filteredEvents, useYear);
-  maxYear = d3.max(filteredEvents, useYear);
-
-  // TODO consider removing change handler from slider
-  yearSlider.slider("option", "min", minYear);
-  yearSlider.slider("option", "max", maxYear);
-  yearSlider.slider("option", "values", [minYear, maxYear]);
-
-  return this;
+  // adapt map pan/zoom changes
+  filteredEvents = eventsLimitedByYear.filter(function(d) {
+    var coords = xy([d.longitude,d.latitude]);
+    return !(
+      coords[0] == NaN || coords[0] < -maxBubbleSize || mapElement.offsetWidth  -maxBubbleSize < coords[0]
+      ||
+      coords[1] == NaN || coords[1] < -maxBubbleSize || mapElement.offsetHeight -maxBubbleSize < coords[1]
+      );
+  });
 }
 
 function resetFilters() {
   filteredEvents = allEvents;
-  adaptFiltering();
   refreshFully();
 }
 
@@ -403,9 +412,11 @@ function initYearly() {
     ;
   // the year range slider
   function yearSliderUpdate(event, ui) {
+    yearLB = parseInt(ui.values[0]);
+    yearUB = parseInt(ui.values[1]);
     $("#yearL").val(ui.values[0]);
     $("#yearU").val(ui.values[1]);
-    refreshFully();
+    resetFilters();
   }
   yearSlider = $("#year-range-slider").slider({
       range: true,
@@ -426,8 +437,8 @@ function initYearly() {
     i.value = y;
     return y;
   };
-  $("#yearL").change(function() { yearSlider.slider("values", 0, yearInputValidate(this)); });
-  $("#yearU").change(function() { yearSlider.slider("values", 1, yearInputValidate(this)); });;
+  $("#yearL").change(function() { yearLB = parseInt(this.value); yearSlider.slider("values", 0, yearInputValidate(this)); });
+  $("#yearU").change(function() { yearUB = parseInt(this.value); yearSlider.slider("values", 1, yearInputValidate(this)); });;
 }
 
 
@@ -435,16 +446,8 @@ function initYearly() {
 //// controllers and more
 // view updaters
 function updateMap() {
-  filteredEventsByLocation = indexBy(filteredEvents, function(d) {
-      var coords = xy([d.longitude,d.latitude]);
-      if ( coords[0] == NaN || coords[0] < -maxBubbleSize || mapElement.offsetWidth  -maxBubbleSize < coords[0]
-        || coords[1] == NaN || coords[1] < -maxBubbleSize || mapElement.offsetHeight -maxBubbleSize < coords[1])
-        return null;
-      else
-        return coords.join(",");
-      });
-  // TODO update filteredEvents and adaptFiltering
-  filteredEventsLocationGroups = d3.values(filteredEventsByLocation);
+  var eventsByLocation = indexBy(filteredEvents, useLocation);
+  filteredEventsLocationGroups = d3.values(eventsByLocation);
 
   var eventGroups = filteredEventsLocationGroups
     // XXX sorting is required since larger bubbles will occlude smaller ones beneath them
@@ -454,9 +457,10 @@ function updateMap() {
     ;
   // XXX not displaying too smaller ones for performance
   eventGroups.splice(maxNrBubblesToShow);
+  if (eventGroups.length == 0)
+    return false;
   var maxSize = eventGroups[0].length; // TODO global max  vs.  local max
   var minSize = eventGroups[eventGroups.length-1].length;
-  console.log(minSize,maxSize, eventGroups.length);
   var bubbleScaleZoom = Math.sqrt(mapZoomScaleValue)
   var bubbleScale = d3.scale.sqrt()
       .domain([minSize, maxSize])
@@ -514,9 +518,7 @@ function updateMap() {
 
 function updateYearly() {
   var eventGroupsByYear = indexBy(filteredEvents, useYear);
-  // TODO feedback to adaptFiltering()
   var yearGroups = d3.values(eventGroupsByYear);
-  var nrYears = (maxYear - minYear + 1);
   var maxCount = d3.max(yearGroups, useLength); // TODO global max  vs.  local max
   var barWidth = (yearlyWidth / nrYears) * barWidthToSpacing;
   var x = d3.scale.linear()
@@ -528,42 +530,88 @@ function updateYearly() {
       .range([0, yearlyHeight])
       ;
 
-  yearlyStats
-    .selectAll("rect")
+  yearlyStats.selectAll("rect")
       .data(yearGroups, useFirstInGroup(useYear))
     .enter().append("svg:rect")
+      .attr("x", function(d) { return x(useYear(d[0])); })
+      .attr("y", yearlyHeight)
+      .attr("height", 0)
+      .attr("width", barWidth)
+      .attr("opacity", 0)
+    .transition().duration(duration)
+      .attr("height", function(d) { return y(d.length); })
+      .attr("y", function(d) { return yearlyHeight - y(d.length); })
+      ;
+  yearlyStats.selectAll("rect")
+    .transition().duration(duration)
       .attr("x", function(d) { return x(useYear(d[0])); })
       .attr("y", function(d) { return yearlyHeight - y(d.length); })
       .attr("height", function(d) { return y(d.length); })
       .attr("width", barWidth)
+      .attr("opacity", 1)
       ;
-  yearlyStats
-    .selectAll("rect")
+  yearlyStats.selectAll("rect")
       .data(yearGroups, useFirstInGroup(useYear))
-    .exit().remove()
+    .exit()
+    .transition().duration(duration)
+      .attr("opacity", 0)
+      .remove()
       ;
 
-  yearlyStats
-    .selectAll("text.xAxis")
-      .data(x.ticks(10))
+  var xTicks = x.ticks(10);
+  yearlyStats.selectAll("text.xAxis")
+      .data(xTicks)
     .enter().append("svg:text")
-      .text(d3.id)
-      .attr("x", x)
-      .attr("y", yearlyHeight)
+      .attr("class", "xAxis")
       .attr("text-anchor", "middle")
       .attr("dx", barWidth/2)
       .attr("dy", 14)
-      .attr("class", "xAxis")
-      ;
-  yearlyStats
-    .selectAll("text.yAxis")
-      .data(y.ticks(4))
-    .enter().append("svg:text")
       .text(d3.id)
-      .attr("x", -5)
-      .attr("y", function(d) { return yearlyHeight - y(d); })
+      .attr("x", x)
+      .attr("y", yearlyHeight)
+    .transition().duration(duration)
+      .attr("opacity", 0)
+      ;
+  yearlyStats.selectAll("text.xAxis")
+    .transition().duration(duration)
+      .attr("x", x)
+      .attr("y", yearlyHeight)
+      .attr("opacity", 1)
+    ;
+  yearlyStats.selectAll("text.xAxis")
+      .data(xTicks)
+    .exit()
+      .attr("x", x)
+      .attr("opacity", 0)
+      .remove()
+      ;
+
+  var heightBasedY = function(d) { return yearlyHeight - y(d); };
+  var yTicks = y.ticks(4);
+  yearlyStats.selectAll("text.yAxis")
+      .data(yTicks, d3.id)
+    .enter().append("svg:text")
       .attr("text-anchor", "end")
       .attr("class", "yAxis")
+      .text(d3.id)
+      .attr("x", -5)
+      .attr("y", heightBasedY)
+      .attr("opacity", 0)
+    .transition().duration(duration*2)
+      ;
+  yearlyStats.selectAll("text.yAxis")
+    .transition().duration(duration)
+      .attr("x", -5)
+      .attr("y", heightBasedY)
+      .attr("opacity", 1)
+      ;
+  yearlyStats.selectAll("text.yAxis")
+      .data(yTicks, d3.id)
+    .exit()
+    .transition().delay(duration).duration(duration)
+      .attr("y", heightBasedY)
+      .attr("opacity", 0)
+      .remove()
       ;
 }
 
@@ -622,6 +670,7 @@ function generateURL(conf) {
 
 function refresh() {
   countries.selectAll("path").attr("d", path);
+  adaptFiltering();
   updateMap();
 }
 function refreshFully() {
@@ -765,6 +814,16 @@ function initMapInteractions() {
 }
 
 
+function initWithData(data) {
+  allEvents = data;
+  yearLB = minYear = d3.min(allEvents, useYear);
+  yearUB = maxYear = d3.max(allEvents, useYear);
+  nrYears = (maxYear - minYear + 1);
+  yearSlider.slider("option", "min", minYear);
+  yearSlider.slider("option", "max", maxYear);
+  yearSlider.slider("option", "values", [minYear, maxYear]);
+}
+
 // entry point
 $(window).load(function() {
     // initialize everything
@@ -774,7 +833,7 @@ $(window).load(function() {
     initYearly();
     d3.json("data/conferences.json", function(data) {
       // load events data
-      allEvents = data;
+      initWithData(data);
       resetFilters();
       // hide the loading spinner
       setTimeout(function(){
