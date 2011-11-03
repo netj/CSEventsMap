@@ -373,11 +373,6 @@ function adaptFiltering() {
   });
 }
 
-function resetFilters() {
-  filteredEvents = allEvents;
-  refreshFully();
-}
-
 
 //// views
 
@@ -454,9 +449,9 @@ function initYearly() {
   function yearSliderUpdate(event, ui) {
     yearLB = parseInt(ui.values[0]);
     yearUB = parseInt(ui.values[1]);
-    $("#yearL").val(ui.values[0]);
-    $("#yearU").val(ui.values[1]);
-    resetFilters();
+    $("#yearL").val(yearLB);
+    $("#yearU").val(yearUB);
+    syncURL();
   }
   yearSlider = $("#year-range-slider").slider({
       range: true,
@@ -464,7 +459,7 @@ function initYearly() {
       max: maxYear,
       step: 1,
       values: [minYear, maxYear],
-      change: yearSliderUpdate,
+      change: yearSliderUpdate
   });
   // validate entered values
   var yearInputValidate = function(i) {
@@ -476,8 +471,8 @@ function initYearly() {
     i.value = y;
     return y;
   };
-  $("#yearL").change(function() { yearLB = parseInt(this.value); yearSlider.slider("values", 0, yearInputValidate(this)); });
-  $("#yearU").change(function() { yearUB = parseInt(this.value); yearSlider.slider("values", 1, yearInputValidate(this)); });;
+  $("#yearL").change(function() { yearSlider.slider("values", 0, yearInputValidate(this)); });
+  $("#yearU").change(function() { yearSlider.slider("values", 1, yearInputValidate(this)); });;
 }
 
 
@@ -729,7 +724,8 @@ function encodeURLHash() {
   param.lng = Math.round(1000 * coords[0]) / 1000;
   param.lat = Math.round(1000 * coords[1]) / 1000;
   param.z = Math.round(10 * mapZoomScaleValue) / 10;
-  // TODO years = ...;
+  param.yl = yearLB;
+  param.yu = yearUB;
   var hash = [];
   for (var i in param)
     hash.push(i + "=" + param[i]);
@@ -757,21 +753,32 @@ function decodeURLHash(hash) {
         o[1] - c[1] + mapElement.offsetHeight/2
         ] );
   }
-  // TODO years
+  // years
+  param.yl = parseFloat(param.yl);
+  param.yu = parseFloat(param.yu);
+  if (param.yl)
+    yearLB = param.yl;
+  if (param.yu)
+    yearUB = param.yu;
 }
-var urlSyncInProgress = false;
+var hashChangeInProgress = false;
 function syncURL() {
-  urlSyncInProgress = true;
-  location.hash = encodeURLHash();
+  if (hashChangeInProgress)
+    return false;
+  var newHash = encodeURLHash();
+  if (location.hash == "")
+    location.replace(newHash);
+  else if (location.hash != newHash)
+    location.hash = newHash;
   // TODO history.pushState(null, document.title, encodeURLHash());
 }
 $(window).bind("hashchange", function() {
-    if (urlSyncInProgress) {
-      urlSyncInProgress = false;
-      return false;
-    }
+    console.log("hash changed", location.hash);
+    hashChangeInProgress = true;
     decodeURLHash(location.hash);
+    yearSlider.slider("values", [yearLB, yearUB]);
     refreshFully();
+    hashChangeInProgress = false;
   });
 
 
@@ -810,7 +817,7 @@ function initMapInteractions() {
       var body = $(document.body);
       if (body.hasClass("panning")) {
         body.removeClass("panning");
-        refreshFully();
+        syncURL();
       }
     });
 
@@ -847,7 +854,7 @@ function initMapInteractions() {
   function zoomMapDone() {
     $(document.body).removeClass("zooming");
     mapZoomingTimeout = null;
-    refreshFully();
+    syncURL();
   }
   map.on("mousewheel", zoomMap);
 }
@@ -907,12 +914,14 @@ function initWithData(data) {
   var groups = d3.values(indexBy(allEvents, useLocation));
   minEvents = d3.min(groups, useLength);
   maxEvents = d3.max(groups, useLength);
-  yearLB = minYear = d3.min(allEvents, useYear);
-  yearUB = maxYear = d3.max(allEvents, useYear);
+  minYear = d3.min(allEvents, useYear);
+  maxYear = d3.max(allEvents, useYear);
   nrYears = (maxYear - minYear + 1);
+  yearLB = yearLB ? yearLB : minYear;
+  yearUB = yearUB ? yearUB : maxYear;
   yearSlider.slider("option", "min", minYear);
   yearSlider.slider("option", "max", maxYear);
-  yearSlider.slider("option", "values", [minYear, maxYear]);
+  yearSlider.slider("option", "values", [yearLB, yearUB]);
 }
 
 // entry point
@@ -925,7 +934,7 @@ $(window).load(function() {
     d3.json("data/conferences.json", function(data) {
       // load events data
       initWithData(data);
-      resetFilters();
+      refreshFully();
       // hide the loading spinner
       setTimeout(function(){
         $("#loading").addClass("done");
