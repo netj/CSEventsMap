@@ -173,9 +173,11 @@
         body.panning, body.panning #map svg {
           cursor: url(resource/closedhand.cur), move !important;
         }
+        /*
         .panning .event, .zooming .event {
           fill: rgba(0,0,0, 0.1) !important;
         }
+        */
         #yearly-view rect:hover {
           fill: #f44;
         }
@@ -250,6 +252,7 @@ Created by <a href="http://github.com/netj">Jaeho Shin</a>.
 var duration = 1000;
 var mapZoomingRefreshDelay = 25;
 // display configuration
+var maxNrBubblesToShow = 50;
 var maxBubbleSize = 10;
 var barWidthToSpacing = 0.9;
 var yearlyPaddingTop = 10;
@@ -286,11 +289,16 @@ var useWhere = function(d) { return d.where; };
 var useScaledLongitude = function(d) { return xy([d.longitude, d.latitude])[0]; }
 var useScaledLatitude  = function(d) { return xy([d.longitude, d.latitude])[1]; }
 
+function ascendingOrder(k)  { return function(a,b) { return k(a) - k(b); }; }
+function descendingOrder(k) { return function(a,b) { return k(b) - k(a); }; }
+var ascendingOrderInLength = ascendingOrder(useLength);
+function descendingOrderInLength(a,b) { return b.length - a.length; }
 
 
 //// data model
 var filteredEvents;
 var filteredEventsByLocation;
+var filteredEventsLocationGroups;
 var allEvents;
 
 // time/space knobs
@@ -323,6 +331,11 @@ function resetFilters() {
 
 
 //// views
+
+function labelWhereGroup(d) {
+  return d[0].where + " (" + d.length + (d.length > 1 ? " events)" : " event)");
+}
+
 // geographical view
 var path = d3.geo.path().projection(xy);
 var map = d3.select("#map").append("svg:svg")
@@ -424,59 +437,77 @@ function initYearly() {
 function updateMap() {
   filteredEventsByLocation = indexBy(filteredEvents, function(d) {
       var coords = xy([d.longitude,d.latitude]);
-      if (coords[0] == NaN || coords[0] < 0 || mapElement.offsetWidth < coords[0]
-        || coords[1] == NaN || coords[1] < 0 || mapElement.offsetHeight < coords[1])
+      if ( coords[0] == NaN || coords[0] < -maxBubbleSize || mapElement.offsetWidth  -maxBubbleSize < coords[0]
+        || coords[1] == NaN || coords[1] < -maxBubbleSize || mapElement.offsetHeight -maxBubbleSize < coords[1])
         return null;
       else
         return coords.join(",");
       });
-  // TODO adaptFiltering
+  // TODO update filteredEvents and adaptFiltering
+  filteredEventsLocationGroups = d3.values(filteredEventsByLocation);
 
-  var eventGroups = d3.values(filteredEventsByLocation);
-  var maxCount = d3.max(eventGroups, useLength); // TODO global max  vs.  local max
+  var eventGroups = filteredEventsLocationGroups
+    // XXX sorting is required since larger bubbles will occlude smaller ones beneath them
+    .sort(descendingOrderInLength)
+    // and we would like to have a copy of it
+    .concat()
+    ;
+  // XXX not displaying too smaller ones for performance
+  eventGroups.splice(maxNrBubblesToShow);
+  var maxSize = eventGroups[0].length; // TODO global max  vs.  local max
+  var minSize = eventGroups[eventGroups.length-1].length;
+  console.log(minSize,maxSize, eventGroups.length);
   var bubbleScaleZoom = Math.sqrt(mapZoomScaleValue)
   var bubbleScale = d3.scale.sqrt()
-      .domain([1, maxCount])
+      .domain([minSize, maxSize])
       .range([bubbleScaleZoom, maxBubbleSize*bubbleScaleZoom])
   var bubbleRadius = function(d) { return bubbleScale(d.length); };
+
+  var newBubbles = eventsMap
+    .selectAll(".event")
+      .data(eventGroups, useFirstInGroup(useLocation))
+    .enter().append("svg:circle")
+      .attr("class", "event")
+      .on("click", showDetails1)
+      .attr("r", 0)
+      ;
+
+  newBubbles
+    .append("svg:title")
+      .text(labelWhereGroup)
+      ;
+  newBubbles
+      .attr("cx", useFirstInGroup(useScaledLongitude))
+      .attr("cy", useFirstInGroup(useScaledLatitude))
+      .attr("r", 0) //.each("end", radiusTransition)
+      ;
+  newBubbles
+    .transition().duration(duration)
+      .attr("r", bubbleRadius)
+      ;
+
   function radiusTransition() {
     d3.select(this)
       .transition().duration(duration)
         .attr("r", bubbleRadius)
         ;
   }
-  function labelBubble(d) {
-    return d[0].where + " (" + d.length + " events)";
-  }
-
   eventsMap
     .selectAll(".event")
-      .data(eventGroups, useFirstInGroup(useLocation))
-    .enter().append("svg:circle")
-      .attr("class", "event")
-      .on("click", showDetails1)
       .attr("cx", useFirstInGroup(useScaledLongitude))
       .attr("cy", useFirstInGroup(useScaledLatitude))
-      .attr("r", 0)
-    .append("svg:title")
-      .text(labelBubble)
-      ;
-
-  eventsMap
-    .selectAll(".event")
     .transition().duration(duration)
-      .attr("cx", useFirstInGroup(useScaledLongitude))
-      .attr("cy", useFirstInGroup(useScaledLatitude))
-    .each("end", radiusTransition)
+      .attr("r", bubbleRadius) //.each("end", radiusTransition)
       ;
 
   eventsMap
     .selectAll(".event")
       .data(eventGroups, useFirstInGroup(useLocation))
     .exit()
-    .transition().duration(duration)
       .attr("cx", useFirstInGroup(useScaledLongitude))
       .attr("cy", useFirstInGroup(useScaledLatitude))
+    .transition().duration(duration)
+      .attr("r", 0) //.each("end", radiusTransition)
       .remove()
       ;
 }
@@ -538,7 +569,7 @@ function updateYearly() {
 
 
 function updateDetails() {
-  showDetails(d3.values(filteredEventsByLocation));
+  showDetails(filteredEventsLocationGroups);
 }
 function showDetails1(group) {
   showDetails([group]);
@@ -550,50 +581,39 @@ function showDetails(groups) {
     .text(groups.length + " places");
   var list = d3.select("#list");
   list
-    .selectAll("li")
+    .selectAll("li.head")
       .data(groups, useFirstInGroup(useWhere))
     .enter().append("li")
+      .attr("class", "head")
+      .style("font-size", "0px")
       .on("click", expandDetails)
-      .text(function(d) {
-          return d[0].where +" ("+ d.length +" events)";
-          })
+      .text(labelWhereGroup)
+      .transition().duration(duration)
+        .style("font-size", "12px")
 //      .each(expandDetails)
       ;
   list
-    .selectAll("li")
+    .selectAll("li.head")
       .data(groups, useFirstInGroup(useWhere))
-    .exit().remove()
-    ;
+    .exit()
+      .transition().duration(duration)
+        .style("font-size", "0px")
+        .remove();
+        ;
 }
 function expandDetails(g, i) {
-  if (d3.select(this).select("ul").node())
+  if ($("ul", this).length > 0)
     return;
-  try {
-    d3.select(this).append("ul")
-      .selectAll("li")
-        .data(g)
-      .entry().append("li")
-        .append("a")
-        .attr("href", generateURL)
-        .text(useTitle)
-        ;
-  } catch (e) {
-    console.log(i, this, g, e.message);
-    var that = this;
-    for (var i=0; i<g.length; i++) {
-      (function(conf) {
-       $("ul", that).append(
-         $("<li>").append(
-           $("<a>")
-           .attr("href", generateURL(conf))
-           .text(useTitle(conf))
-           )
-         )
-       ;
-       return conf;
-       })(g[i]);
-    }
-  }
+  var ul = $("<ul>").appendTo(this);
+  $(g).each(function() {
+      ul.append(
+        $("<li>").append(
+          $("<a>")
+            .attr("href", this.url)
+            .text(this.title)
+          )
+        );
+      });
 }
 function generateURL(conf) {
   return conf.url;
@@ -761,7 +781,7 @@ $(window).load(function() {
         $("#loading").addClass("done");
         setTimeout(function(){
           $("#loading").remove();
-        }, 5000);
+        }, 2000);
       }, duration + 500);
     });
   });
