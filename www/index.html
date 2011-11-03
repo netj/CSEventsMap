@@ -66,7 +66,7 @@
         }
         #yearly-view rect {
           fill: #a81;
-          cursor: pointer;
+          /*cursor: pointer; TODO after yearly interactions */
         }
         #yearly-view line {
           stroke: #444;
@@ -129,12 +129,27 @@
           right: 10px;
           bottom: 0px;
           overflow: auto;
-          padding: 10px 10px 10px 25px;
+          padding: 10px 10px 10px 40px;
           margin: 5px 0px;
           background-color: #222;
           border: 1px solid #444;
           border-radius: 10px;
           box-shadow: 0px 2px 15px #000;
+        }
+        #details #list li ul {
+          margin-left: 0px;
+          padding: 0px;
+        }
+        #details #list li {
+          cursor: pointer;
+        }
+        #details #list li.event {
+          font-size: 11px !important;
+        }
+        #details #list li.exit li.event {
+          font-size: 0px !important;
+          -webkit-transition: all 1s;
+          transition: all 1s;
         }
 
         #map {
@@ -178,12 +193,24 @@
           fill: rgba(0,0,0, 0.1) !important;
         }
         */
+        /* TODO after yearly view interactions
         #yearly-view rect:hover {
           fill: #f44;
         }
-        #eventsMap .event:hover, #eventsMap .event:active {
-          fill: #f44;
+        */
+        #eventsMap .event:hover, #eventsMap .event.hover {
+          fill: #f44 !important;
         }
+        #list li.hover {
+          color: #f44 !important;
+        }
+        #eventsMap .event.highlight {
+          fill: rgba(255,255,0, 0.75);
+        }
+        #list li.highlight {
+          color: #ff0;
+        }
+
 
         #loading {
           top: 40%;
@@ -259,12 +286,22 @@ var yearlyPaddingTop = 10;
 var yearlyPaddingRight = 5;
 var yearlyPaddingBottom = 60;
 var yearlyPaddingLeft = 50;
+var detailsMinFontSize = 10;
+var detailsMaxFontSize = 32;
 
 
 
 //// some vocabularies
 d3.id = function(d) { return d; };
 d3.proj = function(name) { return function(d) { return d[name]; }; }
+function seq() {
+  var fns = arguments;
+  return function() {
+    for (var i=0; i<fns.length; i++) {
+      fns[i].apply(this, arguments);
+    }
+  };
+}
 
 function indexBy(records, keyfn) {
     var index = {};
@@ -309,6 +346,8 @@ var xy = d3.geo.mercator();
 var yearLB, yearUB;
 var mapZoomScaleValue = 1.0;
 
+var minEvents;
+var maxEvents;
 var minYear = 1960;
 var maxYear = new Date().getYear()+1900 + 1;
 var nrYears = maxYear - minYear + 1;
@@ -425,7 +464,6 @@ function initYearly() {
       step: 1,
       values: [minYear, maxYear],
       change: yearSliderUpdate,
-      slide: yearSliderUpdate
   });
   // validate entered values
   var yearInputValidate = function(i) {
@@ -459,11 +497,11 @@ function updateMap() {
   eventGroups.splice(maxNrBubblesToShow);
   if (eventGroups.length == 0)
     return false;
-  var maxSize = eventGroups[0].length; // TODO global max  vs.  local max
-  var minSize = eventGroups[eventGroups.length-1].length;
+  var filteredMaxEvents = eventGroups[0].length; // TODO global max  vs.  local max
+  var filteredMinEvents = eventGroups[eventGroups.length-1].length;
   var bubbleScaleZoom = Math.sqrt(mapZoomScaleValue)
   var bubbleScale = d3.scale.sqrt()
-      .domain([minSize, maxSize])
+      .domain([minEvents, maxEvents])
       .range([bubbleScaleZoom, maxBubbleSize*bubbleScaleZoom])
   var bubbleRadius = function(d) { return bubbleScale(d.length); };
 
@@ -472,36 +510,29 @@ function updateMap() {
       .data(eventGroups, useFirstInGroup(useLocation))
     .enter().append("svg:circle")
       .attr("class", "event")
-      .on("click", showDetails1)
-      .attr("r", 0)
+      .on("click", toggleHighlightFromMap)
+      .on("mouseover", toggleHighlightFromMap)
+      .on("mouseout", toggleHighlightFromMap)
+      .attr("cx", useFirstInGroup(useScaledLongitude))
+      .attr("cy", useFirstInGroup(useScaledLatitude))
       ;
-
   newBubbles
     .append("svg:title")
       .text(labelWhereGroup)
       ;
   newBubbles
-      .attr("cx", useFirstInGroup(useScaledLongitude))
-      .attr("cy", useFirstInGroup(useScaledLatitude))
-      .attr("r", 0) //.each("end", radiusTransition)
-      ;
-  newBubbles
     .transition().duration(duration)
-      .attr("r", bubbleRadius)
+      .attr("r", 0)
+      .attr("opacity", 0)
       ;
 
-  function radiusTransition() {
-    d3.select(this)
-      .transition().duration(duration)
-        .attr("r", bubbleRadius)
-        ;
-  }
   eventsMap
     .selectAll(".event")
       .attr("cx", useFirstInGroup(useScaledLongitude))
       .attr("cy", useFirstInGroup(useScaledLatitude))
     .transition().duration(duration)
-      .attr("r", bubbleRadius) //.each("end", radiusTransition)
+      .attr("r", bubbleRadius)
+      .attr("opacity", 1)
       ;
 
   eventsMap
@@ -511,7 +542,8 @@ function updateMap() {
       .attr("cx", useFirstInGroup(useScaledLongitude))
       .attr("cy", useFirstInGroup(useScaledLatitude))
     .transition().duration(duration)
-      .attr("r", 0) //.each("end", radiusTransition)
+      .attr("r", 0)
+      .attr("opacity", 0)
       .remove()
       ;
 }
@@ -619,52 +651,58 @@ function updateYearly() {
 function updateDetails() {
   showDetails(filteredEventsLocationGroups);
 }
-function showDetails1(group) {
-  showDetails([group]);
-}
 function showDetails(groups) {
-  // TODO sorting?
-  // var eventsOfInterest = groups.reduce(function(a,b){ return a.concat(b); });
   var summary = d3.select("#summary")
     .text(groups.length + " places");
+
+  var filteredMaxEvents = groups[0].length; // TODO global max  vs.  local max
+  var filteredMinEvents = groups[groups.length-1].length;
+  var fontScale = d3.scale.linear()
+    .domain([minEvents-1, maxEvents])
+    .range([detailsMinFontSize, detailsMaxFontSize])
+    ;
+  var fontScalePixels = function(d) { return fontScale(d.length) + "px"; };
   var list = d3.select("#list");
-  list
-    .selectAll("li.head")
+  list.selectAll("li.head")
       .data(groups, useFirstInGroup(useWhere))
     .enter().append("li")
       .attr("class", "head")
       .style("font-size", "0px")
-      .on("click", expandDetails)
-      .text(labelWhereGroup)
+      .on("click", seq(toggleExpandingDetails, toggleHighlightFromDetails))
+      .on("mouseover", toggleHighlightFromDetails)
+      .on("mouseout", toggleHighlightFromDetails)
+      .text(useFirstInGroup(useWhere))
       .transition().duration(duration)
-        .style("font-size", "12px")
-//      .each(expandDetails)
       ;
-  list
-    .selectAll("li.head")
+  list.selectAll("li.head")
+    .transition().duration(duration)
+      .style("font-size", fontScalePixels)
+    ;
+  list.selectAll("li.head")
       .data(groups, useFirstInGroup(useWhere))
     .exit()
       .transition().duration(duration)
+        .attr("class", "exit")
         .style("font-size", "0px")
         .remove();
         ;
 }
-function expandDetails(g, i) {
-  if ($("ul", this).length > 0)
-    return;
-  var ul = $("<ul>").appendTo(this);
-  $(g).each(function() {
-      ul.append(
-        $("<li>").append(
-          $("<a>")
+function toggleExpandingDetails(g, i) {
+  var ul = $("ul", this);
+  if (ul.length > 0) {
+    ul.remove();
+  } else {
+    ul = $("<ul>").appendTo(this);
+    $(g).each(function() {
+        ul.append(
+          $("<li>").attr("class", "event").append(
+            $("<a>")
             .attr("href", this.url)
             .text(this.title)
-          )
-        );
-      });
-}
-function generateURL(conf) {
-  return conf.url;
+            )
+          );
+        });
+  }
 }
 
 
@@ -813,9 +851,61 @@ function initMapInteractions() {
   map.on("mousewheel", zoomMap);
 }
 
+// highlighting
+function toggleClass(className) {
+  return function(d,i) {
+    $(this).toggleClass(className);
+  };
+}
+function toggleClassForSVG(className) {
+  return function(d,i) {
+    var c = this.getAttribute("class");
+    if (c.match(" "+className))
+      c = c.replace(" "+className, "");
+    else
+      c += " "+className;
+    this.setAttribute("class", c);
+  };
+}
+var detailsList = d3.select("#details #list");
+function toggleHighlightFromMap(g) {
+  var c = (d3.event.type.match(/^mouse(over|out)/)) ? "hover" : "highlight";
+  toggleClassForSVG(c).call(this, g);
+  // details
+  var detailItem = detailsList.selectAll("li.head")
+    .data([g], useFirstInGroup(useWhere))
+    .each(toggleClass(c))
+    .node()
+    ;
+  if (d3.event.type == "click")
+    detailItem.scrollIntoView();
+  // TODO yearly
+}
+function toggleHighlightFromDetails(g) {
+  var c = (d3.event.type.match(/^mouse(over|out)/)) ? "hover" : "highlight";
+  toggleClass(c).call(this, g);
+  // map
+  var mapBubble = eventsMap.selectAll(".event")
+    .data([g], useFirstInGroup(useLocation))
+    .each(toggleClassForSVG(c))
+    .node()
+    ;
+  if (d3.event.type == "click")
+    mapBubble.scrollIntoView();
+  // TODO yearly
+}
+function toggleHighlightFromYearly(y) {
+  // TODO map
+  // TODO details
+}
+
+
 
 function initWithData(data) {
   allEvents = data;
+  var groups = d3.values(indexBy(allEvents, useLocation));
+  minEvents = d3.min(groups, useLength);
+  maxEvents = d3.max(groups, useLength);
   yearLB = minYear = d3.min(allEvents, useYear);
   yearUB = maxYear = d3.max(allEvents, useYear);
   nrYears = (maxYear - minYear + 1);
