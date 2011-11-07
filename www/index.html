@@ -31,7 +31,7 @@
           color: #f88;
         }
 
-        h1, h2 { margin: 0; }
+        h1, h2 { margin: 0; display: inline; }
         h1 { font-size: 13px; }
         h2 { font-size: 12px; }
 
@@ -119,6 +119,7 @@
           filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=1 ); /* IE6-9 */
         }
         #details .subtitle {
+          display: block;
           margin-top: 10px;
           margin-left: 10px;
         }
@@ -236,6 +237,7 @@
           z-index: -2;
         }
         #loading .subtitle {
+          display: block;
           font-size: 16px;
           margin-bottom: 30px;
         }
@@ -244,7 +246,12 @@
 
   <body>
 
-<h1 id="title" class="frame" style="display: inline;">Computer Science Academic Events Map</h1>
+<div id="title" class="frame">
+  <h1><a href="http://netj.org/CSEventsMap/">Computer Science Academic Events Map</a></h1>
+  <span style="margin-left: 10px;"></span>
+  using <a href="http://mbostock.github.com/d3/">d3.js</a>
+  on <a href="https://github.com/netj/CSEventsMap/">GitHub</a>.
+</div>
 <div id="caption" class="frame">
 Data Source:
 <a href="http://www.informatik.uni-trier.de/~ley/db/">DBLP XML</a>,
