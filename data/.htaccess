@@ -1,3 +1,9 @@
 AddEncoding x-gzip .gz
 AddEncoding x-compress .Z
 Header add Access-Control-Allow-Origin  http://netj.github.com
+
+# XXX While Safari is happy with above, Chrome wants some more as below :(
+<FilesMatch .*\.json.gz$>
+ForceType application/json
+Header set Content-Encoding: gzip
+</FilesMatch>
