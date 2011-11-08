@@ -1,3 +1,0 @@
-[submodule "www/d3"]
-	path = www/d3
-	url = git://github.com/mbostock/d3.git
