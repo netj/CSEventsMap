@@ -938,7 +938,7 @@ $(window).load(function() {
     initMap();
     initMapInteractions();
     initYearly();
-    d3.json("data/conferences.json", function(data) {
+    d3.json("http://www.stanford.edu/~netj/CSEventsMap/data/conferences.json", function(data) {
       // load events data
       initWithData(data);
       refreshFully();
